@@ -1,0 +1,39 @@
+{
+    "name": "joomla/api-documentation",
+    "description": "Application code for api.joomla.org",
+    "homepage": "http://github.com/joomla/api.joomla.org",
+    "license": "GPL-2.0+",
+    "require": {
+        "php": ">=7.1",
+        "ext-pdo": "*",
+        "joomla/application": "~2.0@dev",
+        "joomla/console": "~2.0@dev",
+        "joomla/database": "~2.0@dev",
+        "joomla/di": "~2.0@dev",
+        "joomla/event": "~2.0@dev",
+        "joomla/input": "~2.0@dev",
+        "joomla/registry": "~2.0@dev",
+        "monolog/monolog": "^1.23",
+        "phpdocumentor/reflection" : "~1.0",
+        "symfony/console": "4.1.*",
+        "symfony/process": "4.1.*"
+    },
+    "require-dev": {
+        "joomla/coding-standards": "dev-master"
+    },
+    "replace": {
+        "paragonie/random_compat": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Joomla\\ApiDocumentation\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "7.1.21"
+        }
+    }
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="Joomla-API-Documentation">
+
+    <arg name="report" value="full"/>
+    <arg name="tab-width" value="4"/>
+    <arg name="encoding" value="utf-8"/>
+    <arg value="sp"/>
+    <arg name="colors" />
+
+    <!-- Exclude folders not containing production code -->
+    <exclude-pattern>*/etc/*</exclude-pattern>
+    <exclude-pattern>*/logs/*</exclude-pattern>
+
+    <!-- Exclude 3rd party libraries. -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <rule ref="Joomla">
+        <exclude name="Joomla.Commenting.ClassComment.MissingSinceTag"/>
+        <exclude name="Joomla.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
+        <exclude name="Joomla.NamingConventions.ValidVariableName.NotCamelCaps"/>
+        <exclude name="Joomla.NamingConventions.ValidFunctionName.ScopeNotCamelCaps"/>
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+    </rule>
+
+    <rule ref="Joomla.Classes.InstantiateNewClasses">
+        <properties>
+            <property name="shortArraySyntax" value="true"/>
+        </properties>
+    </rule>
+
+    <rule ref="Joomla.Commenting.FileComment.MissingPackageTag">
+        <exclude-pattern>*/phinx.php</exclude-pattern>
+    </rule>
+</ruleset>
