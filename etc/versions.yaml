@@ -8,3 +8,5 @@ branches:
             - 'libraries/joomla'
             - 'libraries/legacy'
             - 'libraries/src'
+        files:
+            - 'libraries/loader.php'

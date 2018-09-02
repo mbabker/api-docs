@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Service;
 
+use Joomla\ApiDocumentation\Command\ParseFilesCommand;
 use Joomla\Console\Application;
 use Joomla\Console\Loader\ContainerLoader;
 use Joomla\Console\Loader\LoaderInterface;
@@ -32,10 +33,12 @@ final class ConsoleProvider implements ServiceProviderInterface
 
 		$container->alias(ContainerLoader::class, LoaderInterface::class)
 			->share(LoaderInterface::class, [$this, 'getApplicationConsoleLoaderService'], true);
+
+		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
 	}
 
 	/**
-	 * Get the command loader service.
+	 * Get the command loader class service.
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
@@ -43,7 +46,9 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 */
 	public function getApplicationConsoleLoaderService(Container $container) : LoaderInterface
 	{
-		$mapping = [];
+		$mapping = [
+			'parse-files' => ParseFilesCommand::class,
+		];
 
 		return new ContainerLoader($container, $mapping);
 	}
@@ -65,5 +70,17 @@ final class ConsoleProvider implements ServiceProviderInterface
 		$application->setCommandLoader($container->get(LoaderInterface::class));
 
 		return $application;
+	}
+
+	/**
+	 * Get the parse files command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ParseFilesCommand
+	 */
+	public function getParseFilesCommandClassService(Container $container) : ParseFilesCommand
+	{
+		return new ParseFilesCommand;
 	}
 }
