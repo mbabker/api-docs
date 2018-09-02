@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Service;
 
+use Joomla\ApiDocumentation\Command\AddSoftwareCommand;
 use Joomla\ApiDocumentation\Command\Database\MakeMigrationCommand;
 use Joomla\ApiDocumentation\Command\Database\MigrateCommand;
 use Joomla\ApiDocumentation\Command\Database\MigrationsStatusCommand;
@@ -37,10 +38,36 @@ final class ConsoleProvider implements ServiceProviderInterface
 		$container->alias(ContainerLoader::class, LoaderInterface::class)
 			->share(LoaderInterface::class, [$this, 'getApplicationConsoleLoaderService'], true);
 
+		$this->registerDatabaseCommands($container);
+
+		$container->share(AddSoftwareCommand::class, [$this, 'getAddSoftwareCommandClassService'], true);
+		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
+	}
+
+	/**
+	 * Registers the database commands to the container.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  void
+	 */
+	private function registerDatabaseCommands(Container $container)
+	{
 		$container->share(MakeMigrationCommand::class, [$this, 'getDatabaseMakeMigrationCommandClassService'], true);
 		$container->share(MigrateCommand::class, [$this, 'getDatabaseMigrateCommandClassService'], true);
 		$container->share(MigrationsStatusCommand::class, [$this, 'getDatabaseMigrationsStatusCommandClassService'], true);
-		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
+	}
+
+	/**
+	 * Get the add software command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  AddSoftwareCommand
+	 */
+	public function getAddSoftwareCommandClassService(Container $container): AddSoftwareCommand
+	{
+		return new AddSoftwareCommand;
 	}
 
 	/**
@@ -53,6 +80,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 	public function getApplicationConsoleLoaderService(Container $container): LoaderInterface
 	{
 		$mapping = [
+			'add-software'               => AddSoftwareCommand::class,
 			'database:make-migration'    => MakeMigrationCommand::class,
 			'database:migrate'           => MigrateCommand::class,
 			'database:migrations-status' => MigrationsStatusCommand::class,
