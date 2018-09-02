@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Command\AddSoftwareCommand;
+use Joomla\ApiDocumentation\Command\AddSoftwareVersionCommand;
 use Joomla\ApiDocumentation\Command\Database\MakeMigrationCommand;
 use Joomla\ApiDocumentation\Command\Database\MigrateCommand;
 use Joomla\ApiDocumentation\Command\Database\MigrationsStatusCommand;
@@ -41,6 +42,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 		$this->registerDatabaseCommands($container);
 
 		$container->share(AddSoftwareCommand::class, [$this, 'getAddSoftwareCommandClassService'], true);
+		$container->share(AddSoftwareVersionCommand::class, [$this, 'getAddSoftwareVersionCommandClassService'], true);
 		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
 	}
 
@@ -71,6 +73,18 @@ final class ConsoleProvider implements ServiceProviderInterface
 	}
 
 	/**
+	 * Get the add software version command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  AddSoftwareVersionCommand
+	 */
+	public function getAddSoftwareVersionCommandClassService(Container $container): AddSoftwareVersionCommand
+	{
+		return new AddSoftwareVersionCommand;
+	}
+
+	/**
 	 * Get the command loader class service.
 	 *
 	 * @param   Container  $container  The DI container.
@@ -81,6 +95,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 	{
 		$mapping = [
 			'add-software'               => AddSoftwareCommand::class,
+			'add-software-version'       => AddSoftwareVersionCommand::class,
 			'database:make-migration'    => MakeMigrationCommand::class,
 			'database:migrate'           => MigrateCommand::class,
 			'database:migrations-status' => MigrationsStatusCommand::class,

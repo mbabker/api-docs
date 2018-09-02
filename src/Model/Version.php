@@ -9,18 +9,17 @@
 namespace Joomla\ApiDocumentation\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model defining a software package.
+ * Model defining a version of software.
  *
- * @property  integer               $id
- * @property  string                $name
- * @property  string                $slug
- * @property  Collection|Version[]  $versions
+ * @property  integer       $id
+ * @property  string        $version
+ * @property  Software      $software
+ * @property  integer|null  $software_id
  */
-final class Software extends Model
+final class Version extends Model
 {
 	/**
 	 * Indicates if the model should be timestamped.
@@ -35,17 +34,16 @@ final class Software extends Model
 	 * @var  array
 	 */
 	protected $fillable = [
-		'name',
-		'slug',
+		'version',
 	];
 
 	/**
-	 * Defines the relationship for a software package to the versions it has.
+	 * Defines the relationship for a version to the software it belongs to.
 	 *
-	 * @return  HasMany
+	 * @return  BelongsTo
 	 */
-	public function versions(): HasMany
+	public function software(): BelongsTo
 	{
-		return $this->hasMany(Version::class);
+		return $this->belongsTo(Software::class);
 	}
 }
