@@ -8,12 +8,14 @@
 
 namespace Joomla\ApiDocumentation;
 
-use Illuminate\Container\Container as IlluminateContainer;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Container\Container as IlluminateContainer;
 use Illuminate\Contracts\Container\Container as IlluminateContainerInterface;
+use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\MigrationServiceProvider;
+use Illuminate\Database\Migrations\MigrationCreator as IlluminateMigrationCreator;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Filesystem\Filesystem;
 use Joomla\Application\AbstractApplication;
@@ -21,6 +23,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareInterface;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\ApiDocumentation\Config\ConfigRegistry;
+use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
 use Joomla\ApiDocumentation\Service\ConsoleProvider;
 use Joomla\Registry\Registry;
 
@@ -89,6 +92,15 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 		(new DatabaseServiceProvider($laravelContainer))->register();
 		(new MigrationServiceProvider($laravelContainer))->register();
 
+		// We're using an extended migration creator, change the service in the Laravel container
+		$laravelContainer->extend(
+			'migration.creator',
+			function (IlluminateMigrationCreator $original, IlluminateContainer $app)
+			{
+				return new MigrationCreator($app['files']);
+			}
+		);
+
 		// We're only using the Filesystem class from Laravel, the provider also configures its filesystem manager and disks so manually do this
 		$laravelContainer->singleton(
 			'files',
@@ -98,6 +110,10 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 			}
 		);
 		$laravelContainer->alias('files', Filesystem::class);
+
+		// Set up the database's capsule
+		$manager = new Manager($laravelContainer);
+		$manager->setAsGlobal();
 
 		// We don't have Laravel's event system wired in, so do what the DatabaseServiceProvider's boot method does without it
 		Model::setConnectionResolver($laravelContainer['db']);

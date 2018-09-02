@@ -8,6 +8,9 @@
 
 namespace Joomla\ApiDocumentation\Service;
 
+use Joomla\ApiDocumentation\Command\Database\MakeMigrationCommand;
+use Joomla\ApiDocumentation\Command\Database\MigrateCommand;
+use Joomla\ApiDocumentation\Command\Database\MigrationsStatusCommand;
 use Joomla\ApiDocumentation\Command\ParseFilesCommand;
 use Joomla\Console\Application;
 use Joomla\Console\Loader\ContainerLoader;
@@ -34,6 +37,9 @@ final class ConsoleProvider implements ServiceProviderInterface
 		$container->alias(ContainerLoader::class, LoaderInterface::class)
 			->share(LoaderInterface::class, [$this, 'getApplicationConsoleLoaderService'], true);
 
+		$container->share(MakeMigrationCommand::class, [$this, 'getDatabaseMakeMigrationCommandClassService'], true);
+		$container->share(MigrateCommand::class, [$this, 'getDatabaseMigrateCommandClassService'], true);
+		$container->share(MigrationsStatusCommand::class, [$this, 'getDatabaseMigrationsStatusCommandClassService'], true);
 		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
 	}
 
@@ -44,10 +50,13 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 *
 	 * @return  LoaderInterface
 	 */
-	public function getApplicationConsoleLoaderService(Container $container) : LoaderInterface
+	public function getApplicationConsoleLoaderService(Container $container): LoaderInterface
 	{
 		$mapping = [
-			'parse-files' => ParseFilesCommand::class,
+			'database:make-migration'    => MakeMigrationCommand::class,
+			'database:migrate'           => MigrateCommand::class,
+			'database:migrations-status' => MigrationsStatusCommand::class,
+			'parse-files'                => ParseFilesCommand::class,
 		];
 
 		return new ContainerLoader($container, $mapping);
@@ -60,7 +69,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 *
 	 * @return  Application
 	 */
-	public function getConsoleApplicationClassService(Container $container) : Application
+	public function getConsoleApplicationClassService(Container $container): Application
 	{
 		$application = new Application(
 			$container->get('config.decorated')
@@ -73,13 +82,59 @@ final class ConsoleProvider implements ServiceProviderInterface
 	}
 
 	/**
+	 * Get the database make migration command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  MakeMigrationCommand
+	 */
+	public function getDatabaseMakeMigrationCommandClassService(Container $container): MakeMigrationCommand
+	{
+		return new MakeMigrationCommand(
+			$container->get('migration.creator'),
+			$container->get('migrator'),
+			$container->get('migration.repository')
+		);
+	}
+
+	/**
+	 * Get the database migrate command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  MigrateCommand
+	 */
+	public function getDatabaseMigrateCommandClassService(Container $container): MigrateCommand
+	{
+		return new MigrateCommand(
+			$container->get('migrator'),
+			$container->get('migration.repository')
+		);
+	}
+
+	/**
+	 * Get the database migration status command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  MigrationsStatusCommand
+	 */
+	public function getDatabaseMigrationsStatusCommandClassService(Container $container): MigrationsStatusCommand
+	{
+		return new MigrationsStatusCommand(
+			$container->get('migrator'),
+			$container->get('migration.repository')
+		);
+	}
+
+	/**
 	 * Get the parse files command class service.
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
 	 * @return  ParseFilesCommand
 	 */
-	public function getParseFilesCommandClassService(Container $container) : ParseFilesCommand
+	public function getParseFilesCommandClassService(Container $container): ParseFilesCommand
 	{
 		return new ParseFilesCommand;
 	}

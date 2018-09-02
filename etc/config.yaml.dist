@@ -1,8 +1,7 @@
 database:
-    default: mysql
     migrations: migrations
     connections:
-        mysql:
+        default:
             driver: mysql
             host: 127.0.0.1
             port: ~
