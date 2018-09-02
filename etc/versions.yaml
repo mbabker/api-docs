@@ -1,0 +1,10 @@
+branches:
+    '2':
+        paths:
+            - 'libraries/joomla'
+    '3':
+        paths:
+            - 'libraries/cms'
+            - 'libraries/joomla'
+            - 'libraries/legacy'
+            - 'libraries/src'

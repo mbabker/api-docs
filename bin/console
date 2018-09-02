@@ -7,9 +7,10 @@
  * @license    http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License Version 2 or Later
  */
 
-require JPATH_ROOT . '/vendor/autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 $container = (new Joomla\DI\Container)
+	->registerServiceProvider(new Joomla\ApiDocumentation\Service\ConfigurationProvider)
 	->registerServiceProvider(new Joomla\ApiDocumentation\Service\ConsoleProvider);
 
 // Alias the CLI application to Joomla's base application class as this is the primary application for the environment

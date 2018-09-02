@@ -3,7 +3,7 @@
 /vendor/
 
 # Don't push the local config #
-/etc/config.json
+/etc/config.yaml
 
 # CMS Repository Clone #
 /joomla

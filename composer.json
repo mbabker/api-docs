@@ -16,7 +16,8 @@
         "monolog/monolog": "^1.23",
         "phpdocumentor/reflection" : "~1.0",
         "symfony/console": "4.1.*",
-        "symfony/process": "4.1.*"
+        "symfony/process": "4.1.*",
+        "symfony/yaml": "4.1.*"
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",
