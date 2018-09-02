@@ -63,7 +63,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 	public function getConsoleApplicationClassService(Container $container) : Application
 	{
 		$application = new Application(
-			$container->get('config')
+			$container->get('config.decorated')
 		);
 
 		$application->setName('Joomla! API Documentation');
