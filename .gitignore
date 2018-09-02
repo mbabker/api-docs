@@ -5,5 +5,5 @@
 # Don't push the local config #
 /etc/config.yaml
 
-# CMS Repository Clone #
-/joomla
+# Application Repository Clones #
+/repos

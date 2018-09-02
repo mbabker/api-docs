@@ -33,7 +33,8 @@ final class ParseFilesCommand extends AbstractCommand
 
 		$version = $this->getApplication()->getConsoleInput()->getArgument('version');
 
-		$joomlaDir = dirname(__DIR__, 2) . '/joomla';
+		// TODO - Calculate this based on software definition
+		$joomlaDir = dirname(__DIR__, 2) . '/repos/cms';
 
 		// Pull the release tags and get to our requested version
 		try
