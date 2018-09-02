@@ -19,7 +19,8 @@
         "symfony/process": "4.1.*"
     },
     "require-dev": {
-        "joomla/coding-standards": "dev-master"
+        "joomla/coding-standards": "dev-master",
+        "squizlabs/php_codesniffer": "^2.9"
     },
     "replace": {
         "paragonie/random_compat": "*"

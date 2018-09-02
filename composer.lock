@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d0ec1dd2767645eb6e9664e33f3aa9b",
+    "content-hash": "49aed17ea11e8ba0f56c891387da4ce9",
     "packages": [
         {
             "name": "joomla/application",
