@@ -29,6 +29,7 @@ final class FileParser
 	 */
 	public function parse(string $file, string $rootPath): array
 	{
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$reflector = new FileReflector($file);
 		$reflector->setFilename(ltrim(substr($file, strlen($rootPath)), DIRECTORY_SEPARATOR));
 		$reflector->process();

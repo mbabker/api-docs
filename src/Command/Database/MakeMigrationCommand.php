@@ -104,6 +104,7 @@ final class MakeMigrationCommand extends AbstractMigrationCommand
 	 */
 	private function writeMigration(?string $name, ?string $table, ?bool $create)
 	{
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$file = pathinfo(
 			$this->creator->create(
 				$name,
