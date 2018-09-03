@@ -37,9 +37,11 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
+        "optimize-autoloader": true,
         "platform": {
             "php": "7.1.21"
         },
+        "preferred-install": "dist",
         "sort-packages": true
     }
 }
