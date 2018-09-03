@@ -9,6 +9,9 @@
 use Illuminate\Database\Schema\Blueprint;
 use Joomla\ApiDocumentation\Database\Migrations\Migration;
 
+/**
+ * Create the software versions table
+ */
 class CreateVersionsTable extends Migration
 {
 	/**
