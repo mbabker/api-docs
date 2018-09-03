@@ -21,6 +21,19 @@ use Symfony\Component\Process\Process;
 final class ParseFilesCommand extends AbstractCommand
 {
 	/**
+	 * Internal tracker of stable releases for select software
+	 *
+	 * @const  array
+	 * @todo   Make this more dynamic
+	 */
+	private const STABLE_RELEASES = [
+		'cms' => [
+			'2.5' => '2.5.28',
+			'3.x' => '3.8.12',
+		]
+	];
+
+	/**
 	 * Execute the command.
 	 *
 	 * @return  integer  The exit code for the command.
@@ -31,16 +44,39 @@ final class ParseFilesCommand extends AbstractCommand
 
 		$symfonyStyle->title('Parse Files');
 
-		$version = $this->getApplication()->getConsoleInput()->getArgument('version');
+		$software = $this->getApplication()->getConsoleInput()->getArgument('software');
+		$version  = $this->getApplication()->getConsoleInput()->getArgument('version');
 
-		// TODO - Calculate this based on software definition
-		$joomlaDir = dirname(__DIR__, 2) . '/repos/cms';
+		switch ($software)
+		{
+			case 'cms':
+				if (!isset(self::STABLE_RELEASES['cms'][$version]))
+				{
+					$symfonyStyle->error("Unknown CMS version '$version'");
+
+					return 1;
+				}
+
+				$softwareVersion = self::STABLE_RELEASES['cms'][$version];
+
+				break;
+
+			default:
+				$symfonyStyle->error("Unknown software package '$software'");
+
+				return 1;
+		}
+
+		// TODO - This block needs to be more dynamic when Framework support is added
+		$joomlaDir = dirname(__DIR__, 2) . '/repos/' . $software;
 
 		// Pull the release tags and get to our requested version
 		try
 		{
+			$symfonyStyle->comment("Checking out version $softwareVersion for processing");
+
 			(new Process('git fetch --tags', $joomlaDir))->mustRun();
-			(new Process("git checkout $version", $joomlaDir))->mustRun();
+			(new Process("git checkout $softwareVersion", $joomlaDir))->mustRun();
 		}
 		catch (ProcessFailedException $e)
 		{
@@ -52,13 +88,13 @@ final class ParseFilesCommand extends AbstractCommand
 		}
 
 		// Get the paths to process based on the version
-		$majorBranch = $version[0];
+		$majorBranch = $softwareVersion[0];
 
 		$branchData = $this->getApplication()->get("branches.$majorBranch");
 
 		if (!$branchData)
 		{
-			$symfonyStyle->error("There is no configuration for version '$version'");
+			$symfonyStyle->error("There is no configuration for version '$softwareVersion'");
 
 			return 1;
 		}
@@ -78,6 +114,8 @@ final class ParseFilesCommand extends AbstractCommand
 				continue;
 			}
 
+			$symfonyStyle->comment("Processing directory `$path`");
+
 			$data = array_merge($data, (new DirectoryParser)->parse($fullPath, $joomlaDir));
 		}
 
@@ -85,10 +123,14 @@ final class ParseFilesCommand extends AbstractCommand
 		{
 			$fullPath = $joomlaDir . '/' . $file;
 
+			$symfonyStyle->comment("Processing file `$file`");
+
 			$data = array_merge($data, (new FileParser)->parse($fullPath, $joomlaDir));
 		}
 
 		file_put_contents(dirname(__DIR__, 2) . '/data.json', json_encode($data, JSON_PRETTY_PRINT));
+
+		$symfonyStyle->success('Data processed');
 
 		return 0;
 	}
@@ -102,6 +144,7 @@ final class ParseFilesCommand extends AbstractCommand
 	{
 		$this->setName('parse-files');
 		$this->setDescription('Parse the files for a given release');
-		$this->addArgument('version', InputArgument::REQUIRED, 'The CMS version to process');
+		$this->addArgument('software', InputArgument::REQUIRED, 'The software package to process');
+		$this->addArgument('version', InputArgument::REQUIRED, 'The software version to process');
 	}
 }
