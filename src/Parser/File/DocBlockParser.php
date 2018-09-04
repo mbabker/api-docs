@@ -47,8 +47,8 @@ final class DocBlockParser
 		foreach ($docblock->getTags() as $tag)
 		{
 			$tagData = [
-				'name'    => $tag->getName(),
-				'content' => $tag->getDescription(),
+				'name'        => $tag->getName(),
+				'description' => $tag->getDescription(),
 			];
 
 			if ($tag instanceof ReturnTag)
@@ -73,20 +73,7 @@ final class DocBlockParser
 
 			if ($tag instanceof VersionTag)
 			{
-				// Version string.
-				$version = $tag->getVersion();
-
-				if (!empty($version))
-				{
-					$tagData['content'] = $version;
-				}
-
-				$description = $tag->getDescription();
-
-				if (!empty($description))
-				{
-					$tagData['description'] = $description;
-				}
+				$tagData['version'] = $tag->getVersion();
 			}
 
 			$data['tags'][] = $tagData;
