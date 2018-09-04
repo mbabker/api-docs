@@ -95,7 +95,6 @@ final class ClassParser
 		{
 			$methodData[] = [
 				'name'       => $method->getShortName(),
-				'namespace'  => $method->getNamespace(),
 				'aliases'    => $method->getNamespaceAliases(),
 				'final'      => $method->isFinal(),
 				'abstract'   => $method->isAbstract(),
