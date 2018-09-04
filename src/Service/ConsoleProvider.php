@@ -13,7 +13,9 @@ use Joomla\ApiDocumentation\Command\AddSoftwareVersionCommand;
 use Joomla\ApiDocumentation\Command\Database\MakeMigrationCommand;
 use Joomla\ApiDocumentation\Command\Database\MigrateCommand;
 use Joomla\ApiDocumentation\Command\Database\MigrationsStatusCommand;
+use Joomla\ApiDocumentation\Command\ImportDataCommand;
 use Joomla\ApiDocumentation\Command\ParseFilesCommand;
+use Joomla\ApiDocumentation\Importer\ParsedDataImporter;
 use Joomla\Console\Application;
 use Joomla\Console\Loader\ContainerLoader;
 use Joomla\Console\Loader\LoaderInterface;
@@ -43,6 +45,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 
 		$container->share(AddSoftwareCommand::class, [$this, 'getAddSoftwareCommandClassService'], true);
 		$container->share(AddSoftwareVersionCommand::class, [$this, 'getAddSoftwareVersionCommandClassService'], true);
+		$container->share(ImportDataCommand::class, [$this, 'getImportDataCommandClassService'], true);
 		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
 	}
 
@@ -99,6 +102,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 			'database:make-migration'    => MakeMigrationCommand::class,
 			'database:migrate'           => MigrateCommand::class,
 			'database:migrations-status' => MigrationsStatusCommand::class,
+			'import-data'                => ImportDataCommand::class,
 			'parse-files'                => ParseFilesCommand::class,
 		];
 
@@ -167,6 +171,20 @@ final class ConsoleProvider implements ServiceProviderInterface
 		return new MigrationsStatusCommand(
 			$container->get('migrator'),
 			$container->get('migration.repository')
+		);
+	}
+
+	/**
+	 * Get the import data command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ImportDataCommand
+	 */
+	public function getImportDataCommandClassService(Container $container): ImportDataCommand
+	{
+		return new ImportDataCommand(
+			$container->get(ParsedDataImporter::class)
 		);
 	}
 

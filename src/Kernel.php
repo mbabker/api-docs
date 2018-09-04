@@ -18,13 +18,14 @@ use Illuminate\Database\MigrationServiceProvider;
 use Illuminate\Database\Migrations\MigrationCreator as IlluminateMigrationCreator;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Filesystem\Filesystem;
+use Joomla\ApiDocumentation\Config\ConfigRegistry;
+use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
+use Joomla\ApiDocumentation\Service\ConsoleProvider;
+use Joomla\ApiDocumentation\Service\ParserProvider;
 use Joomla\Application\AbstractApplication;
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareInterface;
 use Joomla\DI\ContainerAwareTrait;
-use Joomla\ApiDocumentation\Config\ConfigRegistry;
-use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
-use Joomla\ApiDocumentation\Service\ConsoleProvider;
 use Joomla\Registry\Registry;
 
 /**
@@ -80,7 +81,8 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 		$laravelContainer->alias('config', Repository::class);
 
 		$joomlaContainer = (new Container($laravelContainer))
-			->registerServiceProvider(new ConsoleProvider);
+			->registerServiceProvider(new ConsoleProvider)
+			->registerServiceProvider(new ParserProvider);
 
 		$joomlaContainer->alias(IlluminateContainer::class, 'illuminate.container')
 			->alias(IlluminateContainerInterface::class, 'illuminate.container')

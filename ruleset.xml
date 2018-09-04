@@ -21,4 +21,10 @@
             <property name="shortArraySyntax" value="true"/>
         </properties>
     </rule>
+
+    <!-- Excluded to allow snake case database column names -->
+   	<rule ref="Joomla.NamingConventions.ValidVariableName.NotCamelCaps">
+   		<exclude-pattern>src/Repository/ClassRepository.php</exclude-pattern>
+   	</rule>
+
 </ruleset>

@@ -10,14 +10,17 @@ namespace Joomla\ApiDocumentation\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * Model defining a version of software.
  *
- * @property  integer       $id
- * @property  string        $version
- * @property  Software      $software
- * @property  integer|null  $software_id
+ * @property  integer                $id
+ * @property  string                 $version
+ * @property  Software               $software
+ * @property  integer|null           $software_id
+ * @property  Collection|PHPClass[]  $classes
  */
 final class Version extends Model
 {
@@ -36,6 +39,16 @@ final class Version extends Model
 	protected $fillable = [
 		'version',
 	];
+
+	/**
+	 * Defines the relationship for a software version to the PHP classes it has.
+	 *
+	 * @return  HasMany
+	 */
+	public function classes(): HasMany
+	{
+		return $this->hasMany(PHPClass::class);
+	}
 
 	/**
 	 * Defines the relationship for a version to the software it belongs to.

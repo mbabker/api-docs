@@ -34,6 +34,23 @@ final class ParseFilesCommand extends AbstractCommand
 	];
 
 	/**
+	 * Path to the data file.
+	 *
+	 * @var  string
+	 */
+	private $dataFile;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->dataFile = dirname(__DIR__, 2) . '/data.json';
+	}
+
+	/**
 	 * Execute the command.
 	 *
 	 * @return  integer  The exit code for the command.
@@ -125,10 +142,10 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing file `$file`");
 
-			$data = array_merge($data, (new FileParser)->parse($fullPath, $joomlaDir));
+			$data[$file] = (new FileParser)->parse($fullPath, $joomlaDir);
 		}
 
-		file_put_contents(dirname(__DIR__, 2) . '/data.json', json_encode($data, JSON_PRETTY_PRINT));
+		file_put_contents($this->dataFile, json_encode($data, JSON_PRETTY_PRINT));
 
 		$symfonyStyle->success('Data processed');
 
