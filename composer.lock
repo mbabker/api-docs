@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7967ddec123c14fec861a07516115fc",
+    "content-hash": "7226a97ac55f185400adcf4f86dd93cc",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -72,6 +72,56 @@
                 "string"
             ],
             "time": "2018-01-09T20:05:19+00:00"
+        },
+        {
+            "name": "illuminate/console",
+            "version": "v5.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/console.git",
+                "reference": "aeac0d059af9b3dc856831d4b82e6539a3454b32"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/console/zipball/aeac0d059af9b3dc856831d4b82e6539a3454b32",
+                "reference": "aeac0d059af9b3dc856831d4b82e6539a3454b32",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "5.7.*",
+                "illuminate/support": "5.7.*",
+                "php": "^7.1.3",
+                "symfony/console": "^4.1"
+            },
+            "suggest": {
+                "dragonmantank/cron-expression": "Required to use scheduling component (^2.0).",
+                "guzzlehttp/guzzle": "Required to use the ping methods on schedules (^6.0).",
+                "symfony/process": "Required to use scheduling component (^4.1)."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\Console\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Console package.",
+            "homepage": "https://laravel.com",
+            "time": "2018-09-04T13:13:04+00:00"
         },
         {
             "name": "illuminate/container",

@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Repository;
 
 use Illuminate\Database\Eloquent\Builder;
+use Joomla\ApiDocumentation\Model\Deprecation;
 use Joomla\ApiDocumentation\Model\PHPClass;
 use Joomla\ApiDocumentation\Model\Version;
 
@@ -30,7 +31,7 @@ final class ClassRepository
 		$namespace = $classNode['namespace'] === 'global' ? null : $classNode['namespace'];
 
 		/** @var PHPClass $classModel */
-		$classModel = PHPClass::query()
+		$classModel = PHPClass::with(['deprecation'])
 			->whereHas(
 				'version',
 				function (Builder $query) use ($version)
@@ -50,8 +51,8 @@ final class ClassRepository
 		$classModel->fill(
 			[
 				'name'        => (string) $namespace . '\\' . $classNode['name'],
-				'summary'     => $classNode['docblock']['summary'],
-				'description' => $classNode['docblock']['description'],
+				'summary'     => $classNode['docblock']['summary'] ?? '',
+				'description' => $classNode['docblock']['description'] ?? '',
 				'final'       => $classNode['final'],
 				'abstract'    => $classNode['abstract'],
 			]
@@ -85,6 +86,32 @@ final class ClassRepository
 		}
 
 		$classModel->save();
+
+		// Process tags for a deprecation if one exists
+		if (isset($classNode['docblock']['tags']))
+		{
+			foreach ($classNode['docblock']['tags'] as $tagNode)
+			{
+				if ($tagNode['name'] !== 'deprecated')
+				{
+					continue;
+				}
+
+				/** @var Deprecation $deprecationModel */
+				$deprecationModel = $classModel->deprecation ?: Deprecation::make();
+
+				$deprecationModel->fill(
+					[
+						'description'     => $tagNode['description'],
+						'removal_version' => $tagNode['version'],
+					]
+				);
+
+				$deprecationModel->deprecatable()->associate($classModel);
+
+				$deprecationModel->save();
+			}
+		}
 
 		return $classModel;
 	}

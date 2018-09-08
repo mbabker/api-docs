@@ -7,6 +7,7 @@
         "php": ">=7.1",
         "ext-json": "*",
         "ext-pdo": "*",
+        "illuminate/console": "5.7.*",
         "illuminate/database": "5.7.*",
         "illuminate/filesystem": "5.7.*",
         "joomla/application": "~2.0@dev",

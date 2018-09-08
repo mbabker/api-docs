@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Command\Database;
 
+use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -31,17 +32,14 @@ final class MigrateCommand extends AbstractMigrationCommand
 		$this->prepareDatabase();
 		$this->ensureMigrationRepositoryExists($symfonyStyle);
 
+		$this->migrator->setOutput(new OutputStyle($input, $this->getApplication()->getConsoleOutput()));
+
 		if ($input->getOption('refresh'))
 		{
 			$this->migrator->reset(
 				$this->getMigrationsPaths(),
 				$input->getOption('pretend')
 			);
-
-			foreach ($this->migrator->getNotes() as $note)
-			{
-				$symfonyStyle->writeln($note);
-			}
 		}
 
 		$this->migrator->run(
@@ -51,11 +49,6 @@ final class MigrateCommand extends AbstractMigrationCommand
 				'step'    => $input->getOption('step'),
 			]
 		);
-
-		foreach ($this->migrator->getNotes() as $note)
-		{
-			$symfonyStyle->writeln($note);
-		}
 
 		return 0;
 	}

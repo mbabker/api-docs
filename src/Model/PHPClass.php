@@ -11,6 +11,7 @@ namespace Joomla\ApiDocumentation\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Collection;
 
 /**
@@ -24,6 +25,7 @@ use Illuminate\Support\Collection;
  * @property  string                 $description
  * @property  boolean                $final
  * @property  boolean                $abstract
+ * @property  Deprecation            $deprecation
  * @property  PHPClass               $parent
  * @property  integer|null           $parent_id
  * @property  Version                $version
@@ -79,6 +81,16 @@ final class PHPClass extends Model
 	public function children(): HasMany
 	{
 		return $this->hasMany(static::class);
+	}
+
+	/**
+	 * Defines the relationship for a PHP class to its deprecation.
+	 *
+	 * @return  MorphOne
+	 */
+	public function deprecation(): MorphOne
+	{
+		return $this->morphOne(Deprecation::class, 'deprecatable');
 	}
 
 	/**
