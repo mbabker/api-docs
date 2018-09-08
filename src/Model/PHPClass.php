@@ -17,20 +17,21 @@ use Illuminate\Support\Collection;
 /**
  * Model defining a PHP class.
  *
- * @property  integer                $id
- * @property  string                 $name
- * @property  string                 $namespace
- * @property  string                 $shortname
- * @property  string                 $summary
- * @property  string                 $description
- * @property  boolean                $final
- * @property  boolean                $abstract
- * @property  Deprecation            $deprecation
- * @property  PHPClass               $parent
- * @property  integer|null           $parent_id
- * @property  Version                $version
- * @property  integer|null           $version_id
- * @property  Collection|PHPClass[]  $children
+ * @property  integer                   $id
+ * @property  string                    $name
+ * @property  string                    $namespace
+ * @property  string                    $shortname
+ * @property  string                    $summary
+ * @property  string                    $description
+ * @property  boolean                   $final
+ * @property  boolean                   $abstract
+ * @property  Deprecation               $deprecation
+ * @property  PHPClass                  $parent
+ * @property  integer|null              $parent_id
+ * @property  Version                   $version
+ * @property  integer|null              $version_id
+ * @property  Collection|PHPClass[]     $children
+ * @property  Collection|ClassMethod[]  $methods
  */
 final class PHPClass extends Model
 {
@@ -91,6 +92,16 @@ final class PHPClass extends Model
 	public function deprecation(): MorphOne
 	{
 		return $this->morphOne(Deprecation::class, 'deprecatable');
+	}
+
+	/**
+	 * Defines the relationship for a PHP class to its methods.
+	 *
+	 * @return  HasMany
+	 */
+	public function methods(): HasMany
+	{
+		return $this->hasMany(ClassMethod::class);
 	}
 
 	/**

@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Importer;
 
 use Joomla\ApiDocumentation\Model\Version;
+use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
 
 /**
@@ -24,13 +25,22 @@ final class ParsedDataImporter
 	private $classRepository;
 
 	/**
+	 * ClassMethod model repository.
+	 *
+	 * @var  ClassMethodRepository
+	 */
+	private $classMethodRepository;
+
+	/**
 	 * Importer constructor.
 	 *
-	 * @param   ClassRepository  $classRepository  PHPClass model repository.
+	 * @param   ClassRepository        $classRepository        PHPClass model repository.
+	 * @param   ClassMethodRepository  $classMethodRepository  ClassMethod model repository.
 	 */
-	public function __construct(ClassRepository $classRepository)
+	public function __construct(ClassRepository $classRepository, ClassMethodRepository $classMethodRepository)
 	{
-		$this->classRepository = $classRepository;
+		$this->classRepository       = $classRepository;
+		$this->classMethodRepository = $classMethodRepository;
 	}
 
 	/**
@@ -48,6 +58,11 @@ final class ParsedDataImporter
 			foreach ($file['classes'] as $class)
 			{
 				$classModel = $this->classRepository->createOrUpdateFromClassNode($class, $version);
+
+				foreach ($class['methods'] as $method)
+				{
+					$methodModel = $this->classMethodRepository->createOrUpdateFromMethodNode($method, $classModel);
+				}
 			}
 		}
 	}
