@@ -80,7 +80,7 @@ final class ClassRepository
 		}
 
 		// If an existing class and there is no longer a parent, break the association
-		if ($classNode['extends'] === '' && !$classModel->id && $classModel->parent_id)
+		if ($classNode['extends'] === '' && $classModel->id && $classModel->parent_id)
 		{
 			$classModel->parent()->dissociate();
 		}
