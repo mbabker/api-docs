@@ -19,6 +19,7 @@
         "joomla/input": "~2.0@dev",
         "joomla/registry": "~2.0@dev",
         "monolog/monolog": "^1.23",
+        "nikic/php-parser": "^1.4.1",
         "phpdocumentor/reflection": "~3.0",
         "symfony/console": "4.1.*",
         "symfony/process": "4.1.*",

@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Command;
 
+use Joomla\ApiDocumentation\Parser\Filesystem\ClassmapParser;
 use Joomla\ApiDocumentation\Parser\Filesystem\DirectoryParser;
 use Joomla\ApiDocumentation\Parser\Filesystem\FileParser;
 use Joomla\Console\AbstractCommand;
@@ -143,6 +144,15 @@ final class ParseFilesCommand extends AbstractCommand
 			$symfonyStyle->comment("Processing file `$file`");
 
 			$data[$file] = (new FileParser)->parse($fullPath, $joomlaDir);
+		}
+
+		$data['aliases'] = [];
+
+		if ($software === 'cms' && file_exists($joomlaDir . '/libraries/classmap.php'))
+		{
+			$symfonyStyle->comment('Processing classmap for aliases');
+
+			$data['aliases'] = (new ClassmapParser)->parse($joomlaDir . '/libraries/classmap.php', $joomlaDir);
 		}
 
 		file_put_contents($this->dataFile, json_encode($data, JSON_PRETTY_PRINT));
