@@ -16,11 +16,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Model defining a version of software.
  *
- * @property  integer                $id
- * @property  string                 $version
- * @property  Software               $software
- * @property  integer|null           $software_id
- * @property  Collection|PHPClass[]  $classes
+ * @property  integer                   $id
+ * @property  string                    $version
+ * @property  Software                  $software
+ * @property  integer|null              $software_id
+ * @property  Collection|PHPClass[]     $classes
+ * @property  Collection|PHPFunction[]  $functions
  */
 final class Version extends Model
 {
@@ -48,6 +49,16 @@ final class Version extends Model
 	public function classes(): HasMany
 	{
 		return $this->hasMany(PHPClass::class);
+	}
+
+	/**
+	 * Defines the relationship for a software version to the PHP functions it has.
+	 *
+	 * @return  HasMany
+	 */
+	public function functions(): HasMany
+	{
+		return $this->hasMany(PHPFunction::class);
 	}
 
 	/**
