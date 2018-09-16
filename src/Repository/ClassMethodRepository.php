@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Repository;
 
 use Illuminate\Database\Eloquent\Builder;
+use Joomla\ApiDocumentation\Model\Argument;
 use Joomla\ApiDocumentation\Model\ClassMethod;
 use Joomla\ApiDocumentation\Model\Deprecation;
 use Joomla\ApiDocumentation\Model\PHPClass;
@@ -81,7 +82,70 @@ final class ClassMethodRepository
 				$deprecationModel->deprecatable()->associate($methodModel);
 
 				$deprecationModel->save();
+
+				// We can break the loop safely
+				break;
 			}
+		}
+
+		// Process arguments
+		foreach ($methodNode['arguments'] as $argumentNode)
+		{
+			/** @var Argument $argumentModel */
+			$argumentModel = $methodModel->arguments()
+				->firstOrNew(
+					[
+						'name' => $argumentNode['name'],
+					]
+				);
+
+			// Fill data from the argument node and set defaults for values which come from the tags
+			$argumentModel->fill(
+				[
+					'default_value' => $argumentNode['default'],
+					'description'   => '',
+					'types'         => [],
+				]
+			);
+
+			// Fill extra data from param tag
+			if (isset($methodNode['docblock']['tags']))
+			{
+				foreach ($methodNode['docblock']['tags'] as $tagNode)
+				{
+					if ($tagNode['name'] !== 'param')
+					{
+						continue;
+					}
+
+					if (!isset($tagNode['variable']) || $tagNode['variable'] !== $argumentNode['name'])
+					{
+						continue;
+					}
+
+					$types = $tagNode['types'];
+
+					// Add type from argument if available and not already included
+					if ($argumentNode['type'] !== '' && !in_array($argumentNode['type'], $types, true))
+					{
+						$types[] = $argumentNode['type'];
+					}
+
+					$argumentModel->fill(
+						[
+							'description' => $tagNode['description'],
+							'types'       => $types,
+						]
+					);
+
+					// We can break the loop safely
+					break;
+				}
+			}
+
+			$argumentModel->argumented()->associate($methodModel);
+
+			$argumentModel->save();
 		}
 
 		return $methodModel;
