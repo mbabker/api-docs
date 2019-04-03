@@ -67,7 +67,7 @@ final class ParsedDataImporter
 	 */
 	public function importData(array $data, Version $version): void
 	{
-		foreach ($data as $file)
+		foreach ($data['files'] as $file)
 		{
 			foreach ($file['classes'] as $class)
 			{

@@ -132,7 +132,10 @@ final class ParseFilesCommand extends AbstractCommand
 
 		$branchRegistry = new Registry($branchData);
 
-		$data = [];
+		$data = [
+			'files'   => [],
+			'aliases' => [],
+		];
 
 		foreach ($branchRegistry->get('paths', []) as $path)
 		{
@@ -147,7 +150,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing directory `$path`");
 
-			$data = array_merge($data, (new DirectoryParser)->parse($fullPath, $joomlaDir));
+			$data['files'] = array_merge($data['files'], (new DirectoryParser)->parse($fullPath, $joomlaDir));
 		}
 
 		foreach ($branchRegistry->get('files', []) as $file)
@@ -156,7 +159,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing file `$file`");
 
-			$data[$file] = (new FileParser)->parse($fullPath, $joomlaDir);
+			$data['files'][$file] = (new FileParser)->parse($fullPath, $joomlaDir);
 		}
 
 		$data['aliases'] = [];
