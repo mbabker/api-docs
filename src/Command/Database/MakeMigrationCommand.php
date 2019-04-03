@@ -14,13 +14,23 @@ use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Support\Str;
 use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Database make migration command
  */
 final class MakeMigrationCommand extends AbstractMigrationCommand
 {
+	/**
+	 * The default command name
+	 *
+	 * @var  string|null
+	 */
+	protected static $defaultName = 'database:make-migration';
+
 	/**
 	 * The migration creator.
 	 *
@@ -43,14 +53,16 @@ final class MakeMigrationCommand extends AbstractMigrationCommand
 	}
 
 	/**
-	 * Execute the command.
+	 * Internal function to execute the command.
 	 *
-	 * @return  integer  The exit code for the command.
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
 	 */
-	public function execute(): int
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
-		$input        = $this->getApplication()->getConsoleInput();
-		$symfonyStyle = $this->createSymfonyStyle();
+		$symfonyStyle = new SymfonyStyle($input, $output);
 
 		$symfonyStyle->title('Database Make Migration');
 
@@ -72,21 +84,20 @@ final class MakeMigrationCommand extends AbstractMigrationCommand
 			[$table, $create] = TableGuesser::guess($name);
 		}
 
-		$this->writeMigration($name, $table, $create);
+		$this->writeMigration($symfonyStyle, $name, $table, $create);
 
 		return 0;
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
-		parent::initialise();
+		parent::configure();
 
-		$this->setName('database:make-migration');
 		$this->setDescription('Create a new database migration');
 		$this->addArgument('name', InputArgument::REQUIRED, 'The name of the migration.');
 		$this->addOption('create', null, InputOption::VALUE_OPTIONAL, 'The table to be created.');
@@ -96,13 +107,14 @@ final class MakeMigrationCommand extends AbstractMigrationCommand
 	/**
 	 * Write the migration file to disk.
 	 *
-	 * @param   string   $name    The name of the migration.
-	 * @param   string   $table   The name of the table being migrated.
-	 * @param   boolean  $create  Flag indicating the table is being created.
+	 * @param   SymfonyStyle  $symfonyStyle  The output object.
+	 * @param   string        $name          The name of the migration.
+	 * @param   string        $table         The name of the table being migrated.
+	 * @param   boolean       $create        Flag indicating the table is being created.
 	 *
 	 * @return  void
 	 */
-	private function writeMigration(?string $name, ?string $table, ?bool $create)
+	private function writeMigration(SymfonyStyle $symfonyStyle, ?string $name, ?string $table, ?bool $create)
 	{
 		/** @noinspection PhpUnhandledExceptionInspection */
 		$file = pathinfo(
@@ -114,6 +126,6 @@ final class MakeMigrationCommand extends AbstractMigrationCommand
 			), PATHINFO_FILENAME
 		);
 
-		$this->createSymfonyStyle()->comment("Created Migration: $file");
+		$symfonyStyle->comment("Created Migration: $file");
 	}
 }

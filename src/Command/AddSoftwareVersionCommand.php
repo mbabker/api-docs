@@ -12,9 +12,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Joomla\ApiDocumentation\Model\Software;
 use Joomla\ApiDocumentation\Model\Version;
-use Joomla\Console\AbstractCommand;
+use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to add a new version of a software package
@@ -22,17 +25,27 @@ use Symfony\Component\Console\Input\InputOption;
 final class AddSoftwareVersionCommand extends AbstractCommand
 {
 	/**
-	 * Execute the command.
+	 * The default command name
 	 *
-	 * @return  integer  The exit code for the command.
+	 * @var  string|null
 	 */
-	public function execute(): int
+	protected static $defaultName = 'add-software-version';
+
+	/**
+	 * Internal function to execute the command.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
+	 */
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
-		$symfonyStyle = $this->createSymfonyStyle();
+		$symfonyStyle = new SymfonyStyle($input, $output);
 
 		$symfonyStyle->title('Add Software Version');
 
-		$software = $this->getSoftware();
+		$software = $this->getSoftware($input);
 
 		if (!$software)
 		{
@@ -72,13 +85,12 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
-		$this->setName('add-software-version');
 		$this->setDescription('Add a new version of a software package');
 		$this->addArgument('version', InputArgument::REQUIRED, 'The version of software to add.');
 		$this->addOption('software', null, InputOption::VALUE_OPTIONAL, 'The ID of the software package to add the version to.');
@@ -87,13 +99,15 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 	/**
 	 * Get the software package either from the request data or by prompting the user.
 	 *
+	 * @param   InputInterface  $input  The input to inject into the command.
+	 *
 	 * @return  Software|null
 	 */
-	protected function getSoftware(): ?Software
+	private function getSoftware(InputInterface $input): ?Software
 	{
 		/** @var Collection|Software[] $software */
 		$software = Software::all();
-		$softwareId = (int) $this->getApplication()->getConsoleInput()->getOption('software');
+		$softwareId = (int) $input->getOption('software');
 
 		if (!$softwareId)
 		{

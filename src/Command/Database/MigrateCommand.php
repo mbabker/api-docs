@@ -9,7 +9,9 @@
 namespace Joomla\ApiDocumentation\Command\Database;
 
 use Illuminate\Console\OutputStyle;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -18,21 +20,30 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class MigrateCommand extends AbstractMigrationCommand
 {
 	/**
-	 * Execute the command.
+	 * The default command name
 	 *
-	 * @return  integer  The exit code for the command.
+	 * @var  string|null
 	 */
-	public function execute(): int
+	protected static $defaultName = 'database:migrate';
+
+	/**
+	 * Internal function to execute the command.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
+	 */
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
-		$input        = $this->getApplication()->getConsoleInput();
-		$symfonyStyle = $this->createSymfonyStyle();
+		$symfonyStyle = new SymfonyStyle($input, $output);
 
 		$symfonyStyle->title('Migrate Database');
 
-		$this->prepareDatabase();
+		$this->prepareDatabase($input);
 		$this->ensureMigrationRepositoryExists($symfonyStyle);
 
-		$this->migrator->setOutput(new OutputStyle($input, $this->getApplication()->getConsoleOutput()));
+		$this->migrator->setOutput(new OutputStyle($input, $output));
 
 		if ($input->getOption('refresh'))
 		{
@@ -54,15 +65,14 @@ final class MigrateCommand extends AbstractMigrationCommand
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
-		parent::initialise();
+		parent::configure();
 
-		$this->setName('database:migrate');
 		$this->setDescription('Migrate the database to the current version');
 		$this->addOption('pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.');
 		$this->addOption('refresh', null, InputOption::VALUE_NONE, 'Resets the database and re-runs all migrations');

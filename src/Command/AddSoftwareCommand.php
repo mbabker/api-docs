@@ -9,10 +9,13 @@
 namespace Joomla\ApiDocumentation\Command;
 
 use Joomla\ApiDocumentation\Model\Software;
-use Joomla\Console\AbstractCommand;
+use Joomla\Console\Command\AbstractCommand;
 use Joomla\Filter\OutputFilter;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to add a new software package
@@ -20,18 +23,28 @@ use Symfony\Component\Console\Question\Question;
 final class AddSoftwareCommand extends AbstractCommand
 {
 	/**
-	 * Execute the command.
+	 * The default command name
 	 *
-	 * @return  integer  The exit code for the command.
+	 * @var  string|null
 	 */
-	public function execute(): int
+	protected static $defaultName = 'add-software';
+
+	/**
+	 * Internal function to execute the command.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
+	 */
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
-		$symfonyStyle = $this->createSymfonyStyle();
+		$symfonyStyle = new SymfonyStyle($input, $output);
 
 		$symfonyStyle->title('Add Software');
 
-		$name = $this->getApplication()->getConsoleInput()->getOption('name');
-		$slug = $this->getApplication()->getConsoleInput()->getOption('slug');
+		$name = $input->getOption('name');
+		$slug = $input->getOption('slug');
 
 		if (!$name)
 		{
@@ -88,13 +101,12 @@ final class AddSoftwareCommand extends AbstractCommand
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
-		$this->setName('add-software');
 		$this->setDescription('Add a new software package');
 		$this->addOption('name', null, InputOption::VALUE_OPTIONAL, 'The name of the software to process');
 		$this->addOption('slug', null, InputOption::VALUE_OPTIONAL, 'The slug (unique identifier) of the software');

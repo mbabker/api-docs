@@ -10,7 +10,8 @@ namespace Joomla\ApiDocumentation\Command\Database;
 
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\Migrations\Migrator;
-use Joomla\Console\AbstractCommand;
+use Joomla\Console\Command\AbstractCommand;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -57,11 +58,11 @@ abstract class AbstractMigrationCommand extends AbstractCommand
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
 		$this->addOption('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.');
 	}
@@ -69,11 +70,13 @@ abstract class AbstractMigrationCommand extends AbstractCommand
 	/**
 	 * Prepare the migration database for running.
 	 *
+	 * @param   InputInterface  $input  The input to process.
+	 *
 	 * @return  void
 	 */
-	protected function prepareDatabase(): void
+	protected function prepareDatabase(InputInterface $input): void
 	{
-		$database = $this->getApplication()->getConsoleInput()->getOption('database');
+		$database = $input->getOption('database');
 
 		$this->migrator->setConnection($database);
 	}

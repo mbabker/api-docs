@@ -9,6 +9,9 @@
 namespace Joomla\ApiDocumentation\Command\Database;
 
 use Illuminate\Support\Collection;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Database migration status command
@@ -16,18 +19,27 @@ use Illuminate\Support\Collection;
 final class MigrationsStatusCommand extends AbstractMigrationCommand
 {
 	/**
-	 * Execute the command.
+	 * The default command name
 	 *
-	 * @return  integer  The exit code for the command.
+	 * @var  string|null
 	 */
-	public function execute(): int
+	protected static $defaultName = 'database:migrations-status';
+
+	/**
+	 * Internal function to execute the command.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
+	 */
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
-		$input        = $this->getApplication()->getConsoleInput();
-		$symfonyStyle = $this->createSymfonyStyle();
+		$symfonyStyle = new SymfonyStyle($input, $output);
 
 		$symfonyStyle->title('Database Migrations Status');
 
-		$this->prepareDatabase();
+		$this->prepareDatabase($input);
 
 		if (!$this->migrator->repositoryExists())
 		{
@@ -53,15 +65,14 @@ final class MigrationsStatusCommand extends AbstractMigrationCommand
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
-		parent::initialise();
+		parent::configure();
 
-		$this->setName('database:migrations-status');
 		$this->setDescription('Check the status of the database migrations');
 	}
 

@@ -21,6 +21,8 @@ use Joomla\Console\Loader\ContainerLoader;
 use Joomla\Console\Loader\LoaderInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Console service provider
@@ -118,9 +120,7 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 */
 	public function getConsoleApplicationClassService(Container $container): Application
 	{
-		$application = new Application(
-			$container->get('config.decorated')
-		);
+		$application = new Application(new ArgvInput, new ConsoleOutput, $container->get('config.decorated'));
 
 		$application->setName('Joomla! API Documentation');
 		$application->setCommandLoader($container->get(LoaderInterface::class));

@@ -11,9 +11,12 @@ namespace Joomla\ApiDocumentation\Command;
 use Joomla\ApiDocumentation\Parser\Filesystem\ClassmapParser;
 use Joomla\ApiDocumentation\Parser\Filesystem\DirectoryParser;
 use Joomla\ApiDocumentation\Parser\Filesystem\FileParser;
-use Joomla\Console\AbstractCommand;
+use Joomla\Console\Command\AbstractCommand;
 use Joomla\Registry\Registry;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 /**
@@ -30,9 +33,16 @@ final class ParseFilesCommand extends AbstractCommand
 	private const STABLE_RELEASES = [
 		'cms' => [
 			'2.5' => '2.5.28',
-			'3.x' => '3.8.12',
+			'3.x' => '3.9.4',
 		]
 	];
+
+	/**
+	 * The default command name
+	 *
+	 * @var  string|null
+	 */
+	protected static $defaultName = 'parse-files';
 
 	/**
 	 * Path to the data file.
@@ -52,18 +62,21 @@ final class ParseFilesCommand extends AbstractCommand
 	}
 
 	/**
-	 * Execute the command.
+	 * Internal function to execute the command.
 	 *
-	 * @return  integer  The exit code for the command.
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
 	 */
-	public function execute(): int
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
 	{
-		$symfonyStyle = $this->createSymfonyStyle();
+		$symfonyStyle = new SymfonyStyle($input, $output);
 
 		$symfonyStyle->title('Parse Files');
 
-		$software = $this->getApplication()->getConsoleInput()->getArgument('software');
-		$version  = $this->getApplication()->getConsoleInput()->getArgument('version');
+		$software = $input->getArgument('software');
+		$version  = $input->getArgument('version');
 
 		switch ($software)
 		{
@@ -163,13 +176,12 @@ final class ParseFilesCommand extends AbstractCommand
 	}
 
 	/**
-	 * Initialise the command.
+	 * Configures the current command.
 	 *
 	 * @return  void
 	 */
-	protected function initialise()
+	protected function configure(): void
 	{
-		$this->setName('parse-files');
 		$this->setDescription('Parse the files for a given release');
 		$this->addArgument('software', InputArgument::REQUIRED, 'The software package to process');
 		$this->addArgument('version', InputArgument::REQUIRED, 'The software version to process');
