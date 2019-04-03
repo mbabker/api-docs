@@ -29,7 +29,7 @@ final class ParserProvider implements ServiceProviderInterface
 	 */
 	public function register(Container $container)
 	{
-		$container->share(ParsedDataImporter::class, [$this, 'getParsedDataImporterClassService'], true);
+		$container->share(ParsedDataImporter::class, [$this, 'getParsedDataImporterClassService']);
 	}
 
 	/**

@@ -10,7 +10,6 @@ namespace Joomla\ApiDocumentation;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Container\Container as IlluminateContainer;
-use Illuminate\Contracts\Container\Container as IlluminateContainerInterface;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +20,8 @@ use Illuminate\Filesystem\Filesystem;
 use Joomla\ApiDocumentation\Config\ConfigRegistry;
 use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
 use Joomla\ApiDocumentation\Service\ConsoleProvider;
+use Joomla\ApiDocumentation\Service\EventProvider;
+use Joomla\ApiDocumentation\Service\LoggingProvider;
 use Joomla\ApiDocumentation\Service\ParserProvider;
 use Joomla\Application\AbstractApplication;
 use Joomla\DI\Container;
@@ -82,13 +83,11 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 
 		$joomlaContainer = (new Container($laravelContainer))
 			->registerServiceProvider(new ConsoleProvider)
+			->registerServiceProvider(new EventProvider)
+			->registerServiceProvider(new LoggingProvider)
 			->registerServiceProvider(new ParserProvider);
 
-		$joomlaContainer->alias(IlluminateContainer::class, 'illuminate.container')
-			->alias(IlluminateContainerInterface::class, 'illuminate.container')
-			->share('illuminate.container', $laravelContainer, true);
-
-		$joomlaContainer->protect('config.decorated', $config, true);
+		$joomlaContainer->share('config.decorated', $config);
 
 		// Configure Laravel container service providers
 		(new DatabaseServiceProvider($laravelContainer))->register();
@@ -99,7 +98,7 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 			'migration.creator',
 			function (IlluminateMigrationCreator $original, IlluminateContainer $app)
 			{
-				return new MigrationCreator($app['files']);
+				return new MigrationCreator($app->make('files'));
 			}
 		);
 
@@ -118,7 +117,7 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 		$manager->setAsGlobal();
 
 		// We don't have Laravel's event system wired in, so do what the DatabaseServiceProvider's boot method does without it
-		Model::setConnectionResolver($laravelContainer['db']);
+		Model::setConnectionResolver($laravelContainer->make('db'));
 
 		// Set the default key length to account for utf8mb4 and MySQL 5.7 quirks
 		Builder::defaultStringLength(191);

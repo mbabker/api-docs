@@ -21,6 +21,8 @@ use Joomla\Console\Loader\ContainerLoader;
 use Joomla\Console\Loader\LoaderInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Joomla\Event\DispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -38,17 +40,17 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 */
 	public function register(Container $container)
 	{
-		$container->share(Application::class, [$this, 'getConsoleApplicationClassService'], true);
+		$container->share(Application::class, [$this, 'getConsoleApplicationClassService']);
 
 		$container->alias(ContainerLoader::class, LoaderInterface::class)
-			->share(LoaderInterface::class, [$this, 'getApplicationConsoleLoaderService'], true);
+			->share(LoaderInterface::class, [$this, 'getApplicationConsoleLoaderService']);
 
 		$this->registerDatabaseCommands($container);
 
-		$container->share(AddSoftwareCommand::class, [$this, 'getAddSoftwareCommandClassService'], true);
-		$container->share(AddSoftwareVersionCommand::class, [$this, 'getAddSoftwareVersionCommandClassService'], true);
-		$container->share(ImportDataCommand::class, [$this, 'getImportDataCommandClassService'], true);
-		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService'], true);
+		$container->share(AddSoftwareCommand::class, [$this, 'getAddSoftwareCommandClassService']);
+		$container->share(AddSoftwareVersionCommand::class, [$this, 'getAddSoftwareVersionCommandClassService']);
+		$container->share(ImportDataCommand::class, [$this, 'getImportDataCommandClassService']);
+		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService']);
 	}
 
 	/**
@@ -60,9 +62,9 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 */
 	private function registerDatabaseCommands(Container $container)
 	{
-		$container->share(MakeMigrationCommand::class, [$this, 'getDatabaseMakeMigrationCommandClassService'], true);
-		$container->share(MigrateCommand::class, [$this, 'getDatabaseMigrateCommandClassService'], true);
-		$container->share(MigrationsStatusCommand::class, [$this, 'getDatabaseMigrationsStatusCommandClassService'], true);
+		$container->share(MakeMigrationCommand::class, [$this, 'getDatabaseMakeMigrationCommandClassService']);
+		$container->share(MigrateCommand::class, [$this, 'getDatabaseMigrateCommandClassService']);
+		$container->share(MigrationsStatusCommand::class, [$this, 'getDatabaseMigrationsStatusCommandClassService']);
 	}
 
 	/**
@@ -124,6 +126,8 @@ final class ConsoleProvider implements ServiceProviderInterface
 
 		$application->setName('Joomla! API Documentation');
 		$application->setCommandLoader($container->get(LoaderInterface::class));
+		$application->setDispatcher($container->get(DispatcherInterface::class));
+		$application->setLogger($container->get(LoggerInterface::class));
 
 		return $application;
 	}
