@@ -7,9 +7,9 @@
         "php": ">=7.1",
         "ext-json": "*",
         "ext-pdo": "*",
-        "illuminate/console": "5.7.*",
-        "illuminate/database": "5.7.*",
-        "illuminate/filesystem": "5.7.*",
+        "illuminate/console": "5.8.*",
+        "illuminate/database": "5.8.*",
+        "illuminate/filesystem": "5.8.*",
         "joomla/application": "~2.0@dev",
         "joomla/console": "~2.0@dev",
         "joomla/database": "~2.0@dev",
@@ -20,10 +20,10 @@
         "joomla/registry": "~2.0@dev",
         "monolog/monolog": "^1.23",
         "nikic/php-parser": "^1.4.1",
-        "phpdocumentor/reflection": "~3.0",
-        "symfony/console": "4.1.*",
-        "symfony/process": "4.1.*",
-        "symfony/yaml": "4.1.*"
+        "phpdocumentor/reflection": "^3.0.1",
+        "symfony/console": "4.2.*",
+        "symfony/process": "4.2.*",
+        "symfony/yaml": "4.2.*"
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",
