@@ -21,6 +21,7 @@ use Joomla\Console\Loader\ContainerLoader;
 use Joomla\Console\Loader\LoaderInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Joomla\Event\Command\DebugEventDispatcherCommand;
 use Joomla\Event\DispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -45,12 +46,22 @@ final class ConsoleProvider implements ServiceProviderInterface
 		$container->alias(ContainerLoader::class, LoaderInterface::class)
 			->share(LoaderInterface::class, [$this, 'getApplicationConsoleLoaderService']);
 
+		/*
+		 * App commands
+		 */
+
 		$this->registerDatabaseCommands($container);
 
 		$container->share(AddSoftwareCommand::class, [$this, 'getAddSoftwareCommandClassService']);
 		$container->share(AddSoftwareVersionCommand::class, [$this, 'getAddSoftwareVersionCommandClassService']);
 		$container->share(ImportDataCommand::class, [$this, 'getImportDataCommandClassService']);
 		$container->share(ParseFilesCommand::class, [$this, 'getParseFilesCommandClassService']);
+
+		/*
+		 * Package commands
+		 */
+
+		$container->share(DebugEventDispatcherCommand::class, [$this, 'getDebugEventDispatcherCommandClassService']);
 	}
 
 	/**
@@ -101,13 +112,14 @@ final class ConsoleProvider implements ServiceProviderInterface
 	public function getApplicationConsoleLoaderService(Container $container): LoaderInterface
 	{
 		$mapping = [
-			'add-software'               => AddSoftwareCommand::class,
-			'add-software-version'       => AddSoftwareVersionCommand::class,
-			'database:make-migration'    => MakeMigrationCommand::class,
-			'database:migrate'           => MigrateCommand::class,
-			'database:migrations-status' => MigrationsStatusCommand::class,
-			'import-data'                => ImportDataCommand::class,
-			'parse-files'                => ParseFilesCommand::class,
+			AddSoftwareCommand::getDefaultName()          => AddSoftwareCommand::class,
+			AddSoftwareVersionCommand::getDefaultName()   => AddSoftwareVersionCommand::class,
+			MakeMigrationCommand::getDefaultName()        => MakeMigrationCommand::class,
+			MigrateCommand::getDefaultName()              => MigrateCommand::class,
+			MigrationsStatusCommand::getDefaultName()     => MigrationsStatusCommand::class,
+			ImportDataCommand::getDefaultName()           => ImportDataCommand::class,
+			ParseFilesCommand::getDefaultName()           => ParseFilesCommand::class,
+			DebugEventDispatcherCommand::getDefaultName() => DebugEventDispatcherCommand::class,
 		];
 
 		return new ContainerLoader($container, $mapping);
@@ -175,6 +187,20 @@ final class ConsoleProvider implements ServiceProviderInterface
 		return new MigrationsStatusCommand(
 			$container->get('migrator'),
 			$container->get('migration.repository')
+		);
+	}
+
+	/**
+	 * Get the debug event dispatcher command class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  DebugEventDispatcherCommand
+	 */
+	public function getDebugEventDispatcherCommandClassService(Container $container): DebugEventDispatcherCommand
+	{
+		return new DebugEventDispatcherCommand(
+			$container->get(DispatcherInterface::class)
 		);
 	}
 
