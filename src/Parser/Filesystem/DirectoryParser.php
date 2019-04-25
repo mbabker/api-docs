@@ -8,6 +8,9 @@
 
 namespace Joomla\ApiDocumentation\Parser\Filesystem;
 
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+
 /**
  * Parser for a directory of files.
  */
@@ -25,9 +28,10 @@ final class DirectoryParser
 	{
 		$data = [];
 
+		/** @var SplFileInfo $file */
 		foreach ($this->getDirectoryFileList($directory) as $file)
 		{
-			$data[ltrim(substr($file, strlen($rootPath)), DIRECTORY_SEPARATOR)] = (new FileParser)->parse($file, $rootPath);
+			$data[ltrim(substr($file->getPathname(), strlen($rootPath)), DIRECTORY_SEPARATOR)] = (new FileParser)->parse($file->getPathname());
 		}
 
 		return $data;
@@ -38,26 +42,15 @@ final class DirectoryParser
 	 *
 	 * @param   string  $directory  The directory to get the file list for.
 	 *
-	 * @return  array
+	 * @return  Finder
 	 */
-	private function getDirectoryFileList(string $directory): array
+	private function getDirectoryFileList(string $directory): Finder
 	{
-		$iterableFiles = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($directory)
-		);
-
-		$files = [];
-
-		foreach ($iterableFiles as $file)
-		{
-			if ($file->getExtension() !== 'php')
-			{
-				continue;
-			}
-
-			$files[] = $file->getPathname();
-		}
-
-		return $files;
+		return (new Finder)
+			->ignoreDotFiles(true)
+			->ignoreVCS(true)
+			->files()
+			->name('*.php')
+			->in($directory);
 	}
 }

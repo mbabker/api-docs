@@ -13,6 +13,7 @@ use Joomla\ApiDocumentation\Parser\File\ClassParser;
 use Joomla\ApiDocumentation\Parser\File\ConstantParser;
 use Joomla\ApiDocumentation\Parser\File\DocBlockParser;
 use phpDocumentor\Reflection\FileReflector;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Parser for a single file.
@@ -22,16 +23,14 @@ final class FileParser
 	/**
 	 * Parses a file.
 	 *
-	 * @param   string  $file      The directory to be parsed.
-	 * @param   string  $rootPath  The root path of the Joomla installation.
+	 * @param   string  $file  The file to be parsed.
 	 *
 	 * @return  array
 	 */
-	public function parse(string $file, string $rootPath): array
+	public function parse(string $file): array
 	{
 		/** @noinspection PhpUnhandledExceptionInspection */
 		$reflector = new FileReflector($file);
-		$reflector->setFilename(ltrim(substr($file, strlen($rootPath)), DIRECTORY_SEPARATOR));
 		$reflector->process();
 
 		$fileData = [
