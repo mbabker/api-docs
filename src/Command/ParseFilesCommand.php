@@ -13,6 +13,7 @@ use Joomla\ApiDocumentation\Parser\Filesystem\DirectoryParser;
 use Joomla\ApiDocumentation\Parser\Filesystem\FileParser;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Registry\Registry;
+use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -101,13 +102,16 @@ final class ParseFilesCommand extends AbstractCommand
 		// TODO - This block needs to be more dynamic when Framework support is added
 		$joomlaDir = dirname(__DIR__, 2) . '/repos/' . $software;
 
+		/** @var ProcessHelper $processHelper */
+		$processHelper = $this->getHelperSet()->get('process');
+
 		// Pull the release tags and get to our requested version
 		try
 		{
 			$symfonyStyle->comment("Checking out version $softwareVersion for processing");
 
-			(new Process('git fetch --tags', $joomlaDir))->mustRun();
-			(new Process("git checkout $softwareVersion", $joomlaDir))->mustRun();
+			$processHelper->mustRun($output, new Process(['git', 'fetch', '--tags'], $joomlaDir));
+			$processHelper->mustRun($output, new Process(['git', 'checkout', $softwareVersion], $joomlaDir));
 		}
 		catch (ProcessFailedException $e)
 		{
