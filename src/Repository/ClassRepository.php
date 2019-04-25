@@ -9,8 +9,10 @@
 namespace Joomla\ApiDocumentation\Repository;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Joomla\ApiDocumentation\Model\Deprecation;
 use Joomla\ApiDocumentation\Model\PHPClass;
+use Joomla\ApiDocumentation\Model\PHPInterface;
 use Joomla\ApiDocumentation\Model\Version;
 
 /**
@@ -86,6 +88,31 @@ final class ClassRepository
 		}
 
 		$classModel->save();
+
+		// Associate the interfaces the class implements if they exist
+		$interfaces = new Collection;
+
+		foreach ($classNode['implements'] as $implementsInterface)
+		{
+			/** @var PHPInterface|null $interface */
+			$interface = PHPInterface::query()
+				->whereHas(
+					'version',
+					function (Builder $query) use ($version)
+					{
+						$query->where('id', '=', $version->id);
+					}
+				)
+				->where('name', '=', $implementsInterface)
+				->first();
+
+			if ($interface)
+			{
+				$interfaces->add($interface);
+			}
+		}
+
+		$classModel->implements()->sync($interfaces);
 
 		// Process tags for a deprecation if one exists
 		if (isset($classNode['docblock']['tags']))

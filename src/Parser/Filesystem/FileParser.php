@@ -12,6 +12,7 @@ use Joomla\ApiDocumentation\Parser\File\ArgumentParser;
 use Joomla\ApiDocumentation\Parser\File\ClassParser;
 use Joomla\ApiDocumentation\Parser\File\ConstantParser;
 use Joomla\ApiDocumentation\Parser\File\DocBlockParser;
+use Joomla\ApiDocumentation\Parser\File\InterfaceParser;
 use phpDocumentor\Reflection\FileReflector;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -34,10 +35,11 @@ final class FileParser
 		$reflector->process();
 
 		$fileData = [
-			'docblock'  => (new DocBlockParser)->parse($reflector),
-			'constants' => [],
-			'functions' => [],
-			'classes'   => [],
+			'docblock'   => (new DocBlockParser)->parse($reflector),
+			'constants'  => [],
+			'functions'  => [],
+			'classes'    => [],
+			'interfaces' => [],
 		];
 
 		foreach ($reflector->getConstants() as $constant)
@@ -59,6 +61,11 @@ final class FileParser
 		foreach ($reflector->getClasses() as $class)
 		{
 			$fileData['classes'][] = (new ClassParser)->parse($class);
+		}
+
+		foreach ($reflector->getInterfaces() as $interface)
+		{
+			$fileData['interfaces'][] = (new InterfaceParser)->parse($interface);
 		}
 
 		return $fileData;

@@ -10,7 +10,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Joomla\ApiDocumentation\Database\Migrations\Migration;
 
 /**
- * Create the classes table
+ * Create the functions table
  */
 class CreateFunctionsTable extends Migration
 {

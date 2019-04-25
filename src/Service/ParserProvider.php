@@ -12,6 +12,8 @@ use Joomla\ApiDocumentation\Importer\ParsedDataImporter;
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
 use Joomla\ApiDocumentation\Repository\FunctionRepository;
+use Joomla\ApiDocumentation\Repository\InterfaceMethodRepository;
+use Joomla\ApiDocumentation\Repository\InterfaceRepository;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
@@ -44,7 +46,9 @@ final class ParserProvider implements ServiceProviderInterface
 		return new ParsedDataImporter(
 			new ClassRepository,
 			new ClassMethodRepository,
-			new FunctionRepository
+			new FunctionRepository,
+			new InterfaceRepository,
+			new InterfaceMethodRepository
 		);
 	}
 }

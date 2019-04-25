@@ -9,39 +9,23 @@
 namespace Joomla\ApiDocumentation\Model;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Model defining a PHP class.
  *
- * @property  integer                   $id
- * @property  string                    $name
- * @property  string                    $namespace
- * @property  string                    $shortname
- * @property  string                    $summary
- * @property  string                    $description
- * @property  boolean                   $final
- * @property  boolean                   $abstract
- * @property  Deprecation               $deprecation
- * @property  PHPClass                  $parent
- * @property  integer|null              $parent_id
- * @property  Version                   $version
- * @property  integer|null              $version_id
- * @property  Collection|PHPClass[]     $children
- * @property  Collection|ClassMethod[]  $methods
+ * @property  boolean                    $final
+ * @property  boolean                    $abstract
+ * @property  PHPClass                   $parent
+ * @property  integer|null               $parent_id
+ * @property  Collection|PHPClass[]      $children
+ * @property  Collection|PHPInterface[]  $implements
+ * @property  Collection|ClassMethod[]   $methods
  */
-final class PHPClass extends Model
+final class PHPClass extends AbstractClass
 {
-	/**
-	 * Indicates if the model should be timestamped.
-	 *
-	 * @var  boolean
-	 */
-	public $timestamps = false;
-
 	/**
 	 * The attributes that should be cast to native types.
 	 *
@@ -85,13 +69,13 @@ final class PHPClass extends Model
 	}
 
 	/**
-	 * Defines the relationship for a PHP class to its deprecation.
+	 * Defines the relationship for a PHP class to the interfaces it implements.
 	 *
-	 * @return  MorphOne
+	 * @return  BelongsToMany
 	 */
-	public function deprecation(): MorphOne
+	public function implements(): BelongsToMany
 	{
-		return $this->morphOne(Deprecation::class, 'deprecatable');
+		return $this->belongsToMany(PHPInterface::class, 'class_interface', 'class_id', 'interface_id');
 	}
 
 	/**
@@ -112,15 +96,5 @@ final class PHPClass extends Model
 	public function parent(): BelongsTo
 	{
 		return $this->belongsTo(static::class);
-	}
-
-	/**
-	 * Defines the relationship for a PHP class to the software version it belongs to.
-	 *
-	 * @return  BelongsTo
-	 */
-	public function version(): BelongsTo
-	{
-		return $this->belongsTo(Version::class);
 	}
 }

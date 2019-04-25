@@ -10,9 +10,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Joomla\ApiDocumentation\Database\Migrations\Migration;
 
 /**
- * Create the deprecations table
+ * Create the interface_parent mapping table
  */
-class CreateDeprecationsTable extends Migration
+class CreateInterfaceParentMappingTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -22,13 +22,13 @@ class CreateDeprecationsTable extends Migration
 	public function up()
 	{
 		$this->getSchemaBuilder()->create(
-			'deprecations',
+			'interface_parent',
 			function (Blueprint $table)
 			{
-				$table->increments('id');
-				$table->text('description');
-				$table->string('removal_version');
-				$table->morphs('deprecatable');
+				$table->integer('interface_id')->unsigned()->index();
+				$table->foreign('interface_id')->references('id')->on('interfaces')->onDelete('cascade');
+				$table->integer('parent_id')->unsigned()->index();
+				$table->foreign('parent_id')->references('id')->on('interfaces')->onDelete('cascade');
 			}
 		);
 	}
@@ -40,6 +40,6 @@ class CreateDeprecationsTable extends Migration
 	 */
 	public function down()
 	{
-		$this->getSchemaBuilder()->dropIfExists('deprecations');
+		$this->getSchemaBuilder()->dropIfExists('interface_parent');
 	}
 }

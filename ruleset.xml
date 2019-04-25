@@ -25,6 +25,7 @@
     <!-- Excluded to allow snake case database column names -->
    	<rule ref="Joomla.NamingConventions.ValidVariableName.NotCamelCaps">
    		<exclude-pattern>src/Repository/ClassRepository.php</exclude-pattern>
+   		<exclude-pattern>src/Repository/InterfaceRepository.php</exclude-pattern>
    	</rule>
 
 </ruleset>

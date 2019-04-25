@@ -10,7 +10,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Joomla\ApiDocumentation\Database\Migrations\Migration;
 
 /**
- * Create the deprecations table
+ * Create the arguments table
  */
 class CreateArgumentsTable extends Migration
 {
@@ -30,8 +30,7 @@ class CreateArgumentsTable extends Migration
 				$table->text('description');
 				$table->text('types');
 				$table->string('default_value')->nullable();
-				$table->integer('argumented_id');
-				$table->string('argumented_type');
+				$table->morphs('argumented');
 			}
 		);
 	}
