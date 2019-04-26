@@ -8,11 +8,6 @@
 
 namespace Joomla\ApiDocumentation\Parser;
 
-use Joomla\ApiDocumentation\Parser\File\ArgumentParser;
-use Joomla\ApiDocumentation\Parser\File\ClassParser;
-use Joomla\ApiDocumentation\Parser\File\ConstantParser;
-use Joomla\ApiDocumentation\Parser\File\DocBlockParser;
-use Joomla\ApiDocumentation\Parser\File\InterfaceParser;
 use phpDocumentor\Reflection\FileReflector;
 use PhpParser\Lexer\Emulative;
 use PhpParser\Node\Expr\StaticCall;
@@ -26,62 +21,20 @@ use Symfony\Component\Finder\SplFileInfo;
 final class FilesystemParser
 {
 	/**
-	 * Class parser.
+	 * Node parser.
 	 *
-	 * @var  ClassParser
+	 * @var  NodeParser
 	 */
-	private $classParser;
-
-	/**
-	 * Interface parser.
-	 *
-	 * @var  InterfaceParser
-	 */
-	private $interfaceParser;
-
-	/**
-	 * Argument parser.
-	 *
-	 * @var  ArgumentParser
-	 */
-	private $argumentParser;
-
-	/**
-	 * Constant parser.
-	 *
-	 * @var  ConstantParser
-	 */
-	private $constantParser;
-
-	/**
-	 * DocBlock parser.
-	 *
-	 * @var  DocBlockParser
-	 */
-	private $docBlockParser;
+	private $nodeParser;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param   ClassParser      $classParser      Class parser.
-	 * @param   InterfaceParser  $interfaceParser  Interface parser.
-	 * @param   ArgumentParser   $argumentParser   Argument parser.
-	 * @param   ConstantParser   $constantParser   Constant parser.
-	 * @param   DocBlockParser   $docBlockParser   DocBlock parser.
+	 * @param   NodeParser  $nodeParser  Node parser.
 	 */
-	public function __construct(
-		ClassParser $classParser,
-		InterfaceParser $interfaceParser,
-		ArgumentParser $argumentParser,
-		ConstantParser $constantParser,
-		DocBlockParser $docBlockParser
-	)
+	public function __construct(NodeParser $nodeParser)
 	{
-		$this->classParser     = $classParser;
-		$this->interfaceParser = $interfaceParser;
-		$this->argumentParser  = $argumentParser;
-		$this->constantParser  = $constantParser;
-		$this->docBlockParser  = $docBlockParser;
+		$this->nodeParser = $nodeParser;
 	}
 
 	/**
@@ -164,7 +117,7 @@ final class FilesystemParser
 		$reflector->process();
 
 		$fileData = [
-			'docblock'   => $this->docBlockParser->parse($reflector),
+			'docblock'   => $this->nodeParser->parseDocBlock($reflector),
 			'constants'  => [],
 			'functions'  => [],
 			'classes'    => [],
@@ -173,28 +126,22 @@ final class FilesystemParser
 
 		foreach ($reflector->getConstants() as $constant)
 		{
-			$fileData['constants'][] = $this->constantParser->parse($constant);
+			$fileData['constants'][] = $this->nodeParser->parseConstant($constant);
 		}
 
 		foreach ($reflector->getFunctions() as $function)
 		{
-			$fileData['functions'][] = [
-				'name'      => $function->getShortName(),
-				'namespace' => $function->getNamespace(),
-				'aliases'   => $function->getNamespaceAliases(),
-				'arguments' => $this->parseArguments($function->getArguments()),
-				'docblock'  => $this->docBlockParser->parse($function),
-			];
+			$fileData['functions'][] = $this->nodeParser->parseFunction($function);
 		}
 
 		foreach ($reflector->getClasses() as $class)
 		{
-			$fileData['classes'][] = $this->classParser->parse($class);
+			$fileData['classes'][] = $this->nodeParser->parseClass($class);
 		}
 
 		foreach ($reflector->getInterfaces() as $interface)
 		{
-			$fileData['interfaces'][] = $this->interfaceParser->parse($interface);
+			$fileData['interfaces'][] = $this->nodeParser->parseInterface($interface);
 		}
 
 		return $fileData;
@@ -215,25 +162,6 @@ final class FilesystemParser
 			->files()
 			->name('*.php')
 			->in($directory);
-	}
-
-	/**
-	 * Parse a function's arguments.
-	 *
-	 * @param   ArgumentReflector[]  $arguments  The function arguments to be parsed.
-	 *
-	 * @return  array
-	 */
-	private function parseArguments(array $arguments): array
-	{
-		$argumentData = [];
-
-		foreach ($arguments as $argument)
-		{
-			$argumentData[] = $this->argumentParser->parse($argument);
-		}
-
-		return $argumentData;
 	}
 
 	/**

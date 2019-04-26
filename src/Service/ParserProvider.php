@@ -9,12 +9,8 @@
 namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Importer\ParsedDataImporter;
-use Joomla\ApiDocumentation\Parser\File\ArgumentParser;
-use Joomla\ApiDocumentation\Parser\File\ClassParser;
-use Joomla\ApiDocumentation\Parser\File\ConstantParser;
-use Joomla\ApiDocumentation\Parser\File\DocBlockParser;
-use Joomla\ApiDocumentation\Parser\File\InterfaceParser;
 use Joomla\ApiDocumentation\Parser\FilesystemParser;
+use Joomla\ApiDocumentation\Parser\NodeParser;
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
 use Joomla\ApiDocumentation\Repository\FunctionRepository;
@@ -50,11 +46,7 @@ final class ParserProvider implements ServiceProviderInterface
 		/*
 		 * Node Parser services
 		 */
-		$container->share(ArgumentParser::class, [$this, 'getArgumentParserClassService']);
-		$container->share(ClassParser::class, [$this, 'getClassParserClassService']);
-		$container->share(ConstantParser::class, [$this, 'getConstantParserClassService']);
-		$container->share(DocBlockParser::class, [$this, 'getDocBlockParserClassService']);
-		$container->share(InterfaceParser::class, [$this, 'getInterfaceParserClassService']);
+		$container->share(NodeParser::class, [$this, 'getNodeParserClassService']);
 	}
 
 	/**
@@ -85,81 +77,19 @@ final class ParserProvider implements ServiceProviderInterface
 	public function getFilesystemParserClassService(Container $container): FilesystemParser
 	{
 		return new FilesystemParser(
-			$container->get(ClassParser::class),
-			$container->get(InterfaceParser::class),
-			$container->get(ArgumentParser::class),
-			$container->get(ConstantParser::class),
-			$container->get(DocBlockParser::class)
+			$container->get(NodeParser::class)
 		);
 	}
 
 	/**
-	 * Get the argument parser class service.
+	 * Get the node parser class service.
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ArgumentParser
+	 * @return  NodeParser
 	 */
-	public function getArgumentParserClassService(Container $container): ArgumentParser
+	public function getNodeParserClassService(Container $container): NodeParser
 	{
-		return new ArgumentParser;
-	}
-
-	/**
-	 * Get the class parser class service.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  ClassParser
-	 */
-	public function getClassParserClassService(Container $container): ClassParser
-	{
-		return new ClassParser(
-			$container->get(ArgumentParser::class),
-			$container->get(ConstantParser::class),
-			$container->get(DocBlockParser::class)
-		);
-	}
-
-	/**
-	 * Get the constant parser class service.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  ConstantParser
-	 */
-	public function getConstantParserClassService(Container $container): ConstantParser
-	{
-		return new ConstantParser(
-			$container->get(DocBlockParser::class)
-		);
-	}
-
-	/**
-	 * Get the doc block parser class service.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  DocBlockParser
-	 */
-	public function getDocBlockParserClassService(Container $container): DocBlockParser
-	{
-		return new DocBlockParser;
-	}
-
-	/**
-	 * Get the interface parser class service.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  InterfaceParser
-	 */
-	public function getInterfaceParserClassService(Container $container): InterfaceParser
-	{
-		return new InterfaceParser(
-			$container->get(ArgumentParser::class),
-			$container->get(ConstantParser::class),
-			$container->get(DocBlockParser::class)
-		);
+		return new NodeParser;
 	}
 }
