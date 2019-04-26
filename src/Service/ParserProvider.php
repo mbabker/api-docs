@@ -14,9 +14,7 @@ use Joomla\ApiDocumentation\Parser\File\ClassParser;
 use Joomla\ApiDocumentation\Parser\File\ConstantParser;
 use Joomla\ApiDocumentation\Parser\File\DocBlockParser;
 use Joomla\ApiDocumentation\Parser\File\InterfaceParser;
-use Joomla\ApiDocumentation\Parser\Filesystem\ClassmapParser;
-use Joomla\ApiDocumentation\Parser\Filesystem\DirectoryParser;
-use Joomla\ApiDocumentation\Parser\Filesystem\FileParser;
+use Joomla\ApiDocumentation\Parser\FilesystemParser;
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
 use Joomla\ApiDocumentation\Repository\FunctionRepository;
@@ -47,9 +45,7 @@ final class ParserProvider implements ServiceProviderInterface
 		/*
 		 * Filesystem Parser services
 		 */
-		$container->share(ClassmapParser::class, [$this, 'getClassmapParserClassService']);
-		$container->share(DirectoryParser::class, [$this, 'getDirectoryParserClassService']);
-		$container->share(FileParser::class, [$this, 'getFileParserClassService']);
+		$container->share(FilesystemParser::class, [$this, 'getFilesystemParserClassService']);
 
 		/*
 		 * Node Parser services
@@ -80,41 +76,15 @@ final class ParserProvider implements ServiceProviderInterface
 	}
 
 	/**
-	 * Get the classmap parser class service.
+	 * Get the filesystem parser class service.
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ClassmapParser
+	 * @return  FilesystemParser
 	 */
-	public function getClassmapParserClassService(Container $container): ClassmapParser
+	public function getFilesystemParserClassService(Container $container): FilesystemParser
 	{
-		return new ClassmapParser;
-	}
-
-	/**
-	 * Get the directory parser class service.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  DirectoryParser
-	 */
-	public function getDirectoryParserClassService(Container $container): DirectoryParser
-	{
-		return new DirectoryParser(
-			$container->get(FileParser::class)
-		);
-	}
-
-	/**
-	 * Get the file parser class service.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  FileParser
-	 */
-	public function getFileParserClassService(Container $container): FileParser
-	{
-		return new FileParser(
+		return new FilesystemParser(
 			$container->get(ClassParser::class),
 			$container->get(InterfaceParser::class),
 			$container->get(ArgumentParser::class),

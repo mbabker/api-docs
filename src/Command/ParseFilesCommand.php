@@ -8,9 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Command;
 
-use Joomla\ApiDocumentation\Parser\Filesystem\ClassmapParser;
-use Joomla\ApiDocumentation\Parser\Filesystem\DirectoryParser;
-use Joomla\ApiDocumentation\Parser\Filesystem\FileParser;
+use Joomla\ApiDocumentation\Parser\FilesystemParser;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Registry\Registry;
 use Symfony\Component\Console\Helper\ProcessHelper;
@@ -46,25 +44,11 @@ final class ParseFilesCommand extends AbstractCommand
 	protected static $defaultName = 'parse-files';
 
 	/**
-	 * The directory parser.
+	 * The filesystem parser.
 	 *
-	 * @var  DirectoryParser
+	 * @var  FilesystemParser
 	 */
-	private $directoryParser;
-
-	/**
-	 * The file parser.
-	 *
-	 * @var  FileParser
-	 */
-	private $fileParser;
-
-	/**
-	 * The classmap alias parser.
-	 *
-	 * @var  ClassmapParser
-	 */
-	private $classmapParser;
+	private $filesystemParser;
 
 	/**
 	 * Path to the data file.
@@ -76,17 +60,13 @@ final class ParseFilesCommand extends AbstractCommand
 	/**
 	 * Constructor.
 	 *
-	 * @param   DirectoryParser  $directoryParser  The directory parser.
-	 * @param   FileParser       $fileParser       The file parser.
-	 * @param   ClassmapParser   $classmapParser   The classmap alias parser.
+	 * @param   FilesystemParser  $filesystemParser  The filesystem parser.
 	 */
-	public function __construct(DirectoryParser $directoryParser, FileParser $fileParser, ClassmapParser $classmapParser)
+	public function __construct(FilesystemParser $filesystemParser)
 	{
 		parent::__construct();
 
-		$this->directoryParser = $directoryParser;
-		$this->fileParser      = $fileParser;
-		$this->classmapParser  = $classmapParser;
+		$this->filesystemParser = $filesystemParser;
 
 		$this->dataFile = dirname(__DIR__, 2) . '/data.json';
 	}
@@ -183,7 +163,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing directory `$path`");
 
-			$data['files'] = array_merge($data['files'], $this->directoryParser->parse($fullPath, $joomlaDir));
+			$data['files'] = array_merge($data['files'], $this->filesystemParser->parseDirectory($fullPath, $joomlaDir));
 		}
 
 		foreach ($branchRegistry->get('files', []) as $file)
@@ -192,7 +172,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing file `$file`");
 
-			$data['files'][$file] = $this->fileParser->parse($fullPath, $joomlaDir);
+			$data['files'][$file] = $this->filesystemParser->parseFile($fullPath);
 		}
 
 		$data['aliases'] = [];
@@ -201,7 +181,7 @@ final class ParseFilesCommand extends AbstractCommand
 		{
 			$symfonyStyle->comment('Processing classmap for aliases');
 
-			$data['aliases'] = $this->classmapParser->parse($joomlaDir . '/libraries/classmap.php', $joomlaDir);
+			$data['aliases'] = $this->filesystemParser->parseClassmapFile($joomlaDir . '/libraries/classmap.php', $joomlaDir);
 		}
 
 		file_put_contents($this->dataFile, json_encode($data, JSON_PRETTY_PRINT));
