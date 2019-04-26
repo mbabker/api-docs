@@ -23,6 +23,7 @@ use Joomla\ApiDocumentation\Service\ConsoleProvider;
 use Joomla\ApiDocumentation\Service\EventProvider;
 use Joomla\ApiDocumentation\Service\LoggingProvider;
 use Joomla\ApiDocumentation\Service\ParserProvider;
+use Joomla\ApiDocumentation\Service\RepositoryProvider;
 use Joomla\Application\AbstractApplication;
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareInterface;
@@ -85,7 +86,8 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 			->registerServiceProvider(new ConsoleProvider)
 			->registerServiceProvider(new EventProvider)
 			->registerServiceProvider(new LoggingProvider)
-			->registerServiceProvider(new ParserProvider);
+			->registerServiceProvider(new ParserProvider)
+			->registerServiceProvider(new RepositoryProvider);
 
 		$joomlaContainer->share('config.decorated', $config);
 

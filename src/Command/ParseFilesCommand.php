@@ -46,6 +46,27 @@ final class ParseFilesCommand extends AbstractCommand
 	protected static $defaultName = 'parse-files';
 
 	/**
+	 * The directory parser.
+	 *
+	 * @var  DirectoryParser
+	 */
+	private $directoryParser;
+
+	/**
+	 * The file parser.
+	 *
+	 * @var  FileParser
+	 */
+	private $fileParser;
+
+	/**
+	 * The classmap alias parser.
+	 *
+	 * @var  ClassmapParser
+	 */
+	private $classmapParser;
+
+	/**
 	 * Path to the data file.
 	 *
 	 * @var  string
@@ -54,10 +75,18 @@ final class ParseFilesCommand extends AbstractCommand
 
 	/**
 	 * Constructor.
+	 *
+	 * @param   DirectoryParser  $directoryParser  The directory parser.
+	 * @param   FileParser       $fileParser       The file parser.
+	 * @param   ClassmapParser   $classmapParser   The classmap alias parser.
 	 */
-	public function __construct()
+	public function __construct(DirectoryParser $directoryParser, FileParser $fileParser, ClassmapParser $classmapParser)
 	{
 		parent::__construct();
+
+		$this->directoryParser = $directoryParser;
+		$this->fileParser      = $fileParser;
+		$this->classmapParser  = $classmapParser;
 
 		$this->dataFile = dirname(__DIR__, 2) . '/data.json';
 	}
@@ -154,7 +183,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing directory `$path`");
 
-			$data['files'] = array_merge($data['files'], (new DirectoryParser)->parse($fullPath, $joomlaDir));
+			$data['files'] = array_merge($data['files'], $this->directoryParser->parse($fullPath, $joomlaDir));
 		}
 
 		foreach ($branchRegistry->get('files', []) as $file)
@@ -163,7 +192,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 			$symfonyStyle->comment("Processing file `$file`");
 
-			$data['files'][$file] = (new FileParser)->parse($fullPath, $joomlaDir);
+			$data['files'][$file] = $this->fileParser->parse($fullPath, $joomlaDir);
 		}
 
 		$data['aliases'] = [];
@@ -172,7 +201,7 @@ final class ParseFilesCommand extends AbstractCommand
 		{
 			$symfonyStyle->comment('Processing classmap for aliases');
 
-			$data['aliases'] = (new ClassmapParser)->parse($joomlaDir . '/libraries/classmap.php', $joomlaDir);
+			$data['aliases'] = $this->classmapParser->parse($joomlaDir . '/libraries/classmap.php', $joomlaDir);
 		}
 
 		file_put_contents($this->dataFile, json_encode($data, JSON_PRETTY_PRINT));

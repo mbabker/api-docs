@@ -17,6 +17,23 @@ use Symfony\Component\Finder\SplFileInfo;
 final class DirectoryParser
 {
 	/**
+	 * File parser.
+	 *
+	 * @var  FileParser
+	 */
+	private $fileParser;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   FileParser  $fileParser  File parser.
+	 */
+	public function __construct(FileParser $fileParser)
+	{
+		$this->fileParser = $fileParser;
+	}
+
+	/**
 	 * Parses all files in a directory.
 	 *
 	 * @param   string  $directory  The directory to be parsed.
@@ -31,7 +48,7 @@ final class DirectoryParser
 		/** @var SplFileInfo $file */
 		foreach ($this->getDirectoryFileList($directory) as $file)
 		{
-			$data[ltrim(substr($file->getPathname(), strlen($rootPath)), DIRECTORY_SEPARATOR)] = (new FileParser)->parse($file->getPathname());
+			$data[ltrim(substr($file->getPathname(), strlen($rootPath)), DIRECTORY_SEPARATOR)] = $this->fileParser->parse($file->getPathname());
 		}
 
 		return $data;

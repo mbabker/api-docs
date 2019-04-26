@@ -20,9 +20,44 @@ use phpDocumentor\Reflection\InterfaceReflector;
 final class InterfaceParser
 {
 	/**
-	 * Parse the class element.
+	 * Argument parser.
 	 *
-	 * @param   InterfaceReflector  $reflector  The class to be parsed.
+	 * @var  ArgumentParser
+	 */
+	private $argumentParser;
+
+	/**
+	 * Constant parser.
+	 *
+	 * @var  ConstantParser
+	 */
+	private $constantParser;
+
+	/**
+	 * DocBlock parser.
+	 *
+	 * @var  DocBlockParser
+	 */
+	private $docBlockParser;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   ArgumentParser  $argumentParser  Argument parser.
+	 * @param   ConstantParser  $constantParser  Constant parser.
+	 * @param   DocBlockParser  $docBlockParser  DocBlock parser.
+	 */
+	public function __construct(ArgumentParser $argumentParser, ConstantParser $constantParser, DocBlockParser $docBlockParser)
+	{
+		$this->argumentParser = $argumentParser;
+		$this->constantParser = $constantParser;
+		$this->docBlockParser = $docBlockParser;
+	}
+
+	/**
+	 * Parse the interface element.
+	 *
+	 * @param   InterfaceReflector  $reflector  The interface to be parsed.
 	 *
 	 * @return  array
 	 */
@@ -35,7 +70,7 @@ final class InterfaceParser
 			'constants'  => $this->parseConstants($reflector->getConstants()),
 			'properties' => $this->parseProperties($reflector->getProperties()),
 			'methods'    => $this->parseMethods($reflector->getMethods()),
-			'docblock'   => (new DocBlockParser)->parse($reflector),
+			'docblock'   => $this->docBlockParser->parse($reflector),
 		];
 	}
 
@@ -52,7 +87,7 @@ final class InterfaceParser
 
 		foreach ($arguments as $argument)
 		{
-			$argumentData[] = (new ArgumentParser)->parse($argument);
+			$argumentData[] = $this->argumentParser->parse($argument);
 		}
 
 		return $argumentData;
@@ -71,7 +106,7 @@ final class InterfaceParser
 
 		foreach ($constants as $constant)
 		{
-			$constantData[] = (new ConstantParser)->parse($constant);
+			$constantData[] = $this->constantParser->parse($constant);
 		}
 
 		return $constantData;
@@ -96,7 +131,7 @@ final class InterfaceParser
 				'static'     => $method->isStatic(),
 				'visibility' => $method->getVisibility(),
 				'arguments'  => $this->parseArguments($method->getArguments()),
-				'docblock'   => (new DocBlockParser)->parse($method),
+				'docblock'   => $this->docBlockParser->parse($method),
 			];
 		}
 
@@ -120,7 +155,7 @@ final class InterfaceParser
 				'name'       => $property->getName(),
 				'static'     => $property->isStatic(),
 				'visibility' => $property->getVisibility(),
-				'docblock'   => (new DocBlockParser)->parse($property),
+				'docblock'   => $this->docBlockParser->parse($property),
 			];
 		}
 

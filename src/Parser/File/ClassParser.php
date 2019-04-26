@@ -20,6 +20,41 @@ use phpDocumentor\Reflection\FunctionReflector\ArgumentReflector;
 final class ClassParser
 {
 	/**
+	 * Argument parser.
+	 *
+	 * @var  ArgumentParser
+	 */
+	private $argumentParser;
+
+	/**
+	 * Constant parser.
+	 *
+	 * @var  ConstantParser
+	 */
+	private $constantParser;
+
+	/**
+	 * DocBlock parser.
+	 *
+	 * @var  DocBlockParser
+	 */
+	private $docBlockParser;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   ArgumentParser  $argumentParser  Argument parser.
+	 * @param   ConstantParser  $constantParser  Constant parser.
+	 * @param   DocBlockParser  $docBlockParser  DocBlock parser.
+	 */
+	public function __construct(ArgumentParser $argumentParser, ConstantParser $constantParser, DocBlockParser $docBlockParser)
+	{
+		$this->argumentParser = $argumentParser;
+		$this->constantParser = $constantParser;
+		$this->docBlockParser = $docBlockParser;
+	}
+
+	/**
 	 * Parse the class element.
 	 *
 	 * @param   ClassReflector  $reflector  The class to be parsed.
@@ -38,7 +73,7 @@ final class ClassParser
 			'constants'  => $this->parseConstants($reflector->getConstants()),
 			'properties' => $this->parseProperties($reflector->getProperties()),
 			'methods'    => $this->parseMethods($reflector->getMethods()),
-			'docblock'   => (new DocBlockParser)->parse($reflector),
+			'docblock'   => $this->docBlockParser->parse($reflector),
 		];
 	}
 
@@ -55,7 +90,7 @@ final class ClassParser
 
 		foreach ($arguments as $argument)
 		{
-			$argumentData[] = (new ArgumentParser)->parse($argument);
+			$argumentData[] = $this->argumentParser->parse($argument);
 		}
 
 		return $argumentData;
@@ -74,7 +109,7 @@ final class ClassParser
 
 		foreach ($constants as $constant)
 		{
-			$constantData[] = (new ConstantParser)->parse($constant);
+			$constantData[] = $this->constantParser->parse($constant);
 		}
 
 		return $constantData;
@@ -101,7 +136,7 @@ final class ClassParser
 				'static'     => $method->isStatic(),
 				'visibility' => $method->getVisibility(),
 				'arguments'  => $this->parseArguments($method->getArguments()),
-				'docblock'   => (new DocBlockParser)->parse($method),
+				'docblock'   => $this->docBlockParser->parse($method),
 			];
 		}
 
@@ -125,7 +160,7 @@ final class ClassParser
 				'name'       => $property->getName(),
 				'static'     => $property->isStatic(),
 				'visibility' => $property->getVisibility(),
-				'docblock'   => (new DocBlockParser)->parse($property),
+				'docblock'   => $this->docBlockParser->parse($property),
 			];
 		}
 

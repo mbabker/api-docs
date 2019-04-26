@@ -22,6 +22,65 @@ use Symfony\Component\Finder\SplFileInfo;
 final class FileParser
 {
 	/**
+	 * Class parser.
+	 *
+	 * @var  ClassParser
+	 */
+	private $classParser;
+
+	/**
+	 * Interface parser.
+	 *
+	 * @var  InterfaceParser
+	 */
+	private $interfaceParser;
+
+	/**
+	 * Argument parser.
+	 *
+	 * @var  ArgumentParser
+	 */
+	private $argumentParser;
+
+	/**
+	 * Constant parser.
+	 *
+	 * @var  ConstantParser
+	 */
+	private $constantParser;
+
+	/**
+	 * DocBlock parser.
+	 *
+	 * @var  DocBlockParser
+	 */
+	private $docBlockParser;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   ClassParser      $classParser      Class parser.
+	 * @param   InterfaceParser  $interfaceParser  Interface parser.
+	 * @param   ArgumentParser   $argumentParser   Argument parser.
+	 * @param   ConstantParser   $constantParser   Constant parser.
+	 * @param   DocBlockParser   $docBlockParser   DocBlock parser.
+	 */
+	public function __construct(
+		ClassParser $classParser,
+		InterfaceParser $interfaceParser,
+		ArgumentParser $argumentParser,
+		ConstantParser $constantParser,
+		DocBlockParser $docBlockParser
+	)
+	{
+		$this->classParser     = $classParser;
+		$this->interfaceParser = $interfaceParser;
+		$this->argumentParser  = $argumentParser;
+		$this->constantParser  = $constantParser;
+		$this->docBlockParser  = $docBlockParser;
+	}
+
+	/**
 	 * Parses a file.
 	 *
 	 * @param   string  $file  The file to be parsed.
@@ -35,7 +94,7 @@ final class FileParser
 		$reflector->process();
 
 		$fileData = [
-			'docblock'   => (new DocBlockParser)->parse($reflector),
+			'docblock'   => $this->docBlockParser->parse($reflector),
 			'constants'  => [],
 			'functions'  => [],
 			'classes'    => [],
@@ -44,7 +103,7 @@ final class FileParser
 
 		foreach ($reflector->getConstants() as $constant)
 		{
-			$fileData['constants'][] = (new ConstantParser)->parse($constant);
+			$fileData['constants'][] = $this->constantParser->parse($constant);
 		}
 
 		foreach ($reflector->getFunctions() as $function)
@@ -54,18 +113,18 @@ final class FileParser
 				'namespace' => $function->getNamespace(),
 				'aliases'   => $function->getNamespaceAliases(),
 				'arguments' => $this->parseArguments($function->getArguments()),
-				'docblock'  => (new DocBlockParser)->parse($function),
+				'docblock'  => $this->docBlockParser->parse($function),
 			];
 		}
 
 		foreach ($reflector->getClasses() as $class)
 		{
-			$fileData['classes'][] = (new ClassParser)->parse($class);
+			$fileData['classes'][] = $this->classParser->parse($class);
 		}
 
 		foreach ($reflector->getInterfaces() as $interface)
 		{
-			$fileData['interfaces'][] = (new InterfaceParser)->parse($interface);
+			$fileData['interfaces'][] = $this->interfaceParser->parse($interface);
 		}
 
 		return $fileData;
@@ -84,7 +143,7 @@ final class FileParser
 
 		foreach ($arguments as $argument)
 		{
-			$argumentData[] = (new ArgumentParser)->parse($argument);
+			$argumentData[] = $this->argumentParser->parse($argument);
 		}
 
 		return $argumentData;

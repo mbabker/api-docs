@@ -16,6 +16,9 @@ use Joomla\ApiDocumentation\Command\Database\MigrationsStatusCommand;
 use Joomla\ApiDocumentation\Command\ImportDataCommand;
 use Joomla\ApiDocumentation\Command\ParseFilesCommand;
 use Joomla\ApiDocumentation\Importer\ParsedDataImporter;
+use Joomla\ApiDocumentation\Parser\Filesystem\ClassmapParser;
+use Joomla\ApiDocumentation\Parser\Filesystem\DirectoryParser;
+use Joomla\ApiDocumentation\Parser\Filesystem\FileParser;
 use Joomla\Console\Application;
 use Joomla\Console\Loader\ContainerLoader;
 use Joomla\Console\Loader\LoaderInterface;
@@ -227,6 +230,10 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 */
 	public function getParseFilesCommandClassService(Container $container): ParseFilesCommand
 	{
-		return new ParseFilesCommand;
+		return new ParseFilesCommand(
+			$container->get(DirectoryParser::class),
+			$container->get(FileParser::class),
+			$container->get(ClassmapParser::class)
+		);
 	}
 }

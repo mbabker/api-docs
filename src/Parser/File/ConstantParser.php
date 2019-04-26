@@ -16,6 +16,23 @@ use phpDocumentor\Reflection\ConstantReflector;
 final class ConstantParser
 {
 	/**
+	 * DocBlock parser.
+	 *
+	 * @var  DocBlockParser
+	 */
+	private $docBlockParser;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   DocBlockParser  $docBlockParser  DocBlock parser.
+	 */
+	public function __construct(DocBlockParser $docBlockParser)
+	{
+		$this->docBlockParser = $docBlockParser;
+	}
+
+	/**
 	 * Parse the constant element.
 	 *
 	 * @param   ConstantReflector  $reflector  The constant to be parsed.
@@ -26,7 +43,7 @@ final class ConstantParser
 	{
 		return [
 			'name'     => $reflector->getShortName(),
-			'docblock' => (new DocBlockParser)->parse($reflector),
+			'docblock' => $this->docBlockParser->parse($reflector),
 		];
 	}
 }
