@@ -39,8 +39,6 @@ final class MigrationsStatusCommand extends AbstractMigrationCommand
 
 		$symfonyStyle->title('Database Migrations Status');
 
-		$this->prepareDatabase($input);
-
 		if (!$this->migrator->repositoryExists())
 		{
 			$symfonyStyle->error('No migrations found.');
@@ -50,11 +48,12 @@ final class MigrationsStatusCommand extends AbstractMigrationCommand
 
 		$ran = $this->migrator->getRepository()->getRan();
 
-		$batches = $this->migrator->getRepository()->getMigrationBatches();
+		$batches    = $this->migrator->getRepository()->getMigrationBatches();
+		$migrations = $this->getStatusFor($ran, $batches);
 
-		if (count($migrations = $this->getStatusFor($ran, $batches)) > 0)
+		if ($migrations->isNotEmpty())
 		{
-			$symfonyStyle->table(['Ran?', 'Migration', 'Batch'], $migrations);
+			$symfonyStyle->table(['Ran?', 'Migration', 'Batch'], $migrations->toArray());
 		}
 		else
 		{

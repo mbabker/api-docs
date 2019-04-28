@@ -40,7 +40,6 @@ final class MigrateCommand extends AbstractMigrationCommand
 
 		$symfonyStyle->title('Migrate Database');
 
-		$this->prepareDatabase($input);
 		$this->ensureMigrationRepositoryExists($symfonyStyle);
 
 		$this->migrator->setOutput(new OutputStyle($input, $output));

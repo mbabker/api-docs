@@ -13,6 +13,7 @@ use Illuminate\Database\Migrations\Migrator;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Base database migration command
@@ -48,16 +49,6 @@ abstract class AbstractMigrationCommand extends AbstractCommand
 	}
 
 	/**
-	 * Get the path to the database migrations.
-	 *
-	 * @return  string[]
-	 */
-	protected function getMigrationsPaths(): array
-	{
-		return [dirname(__DIR__, 3) . '/migrations'];
-	}
-
-	/**
 	 * Configures the current command.
 	 *
 	 * @return  void
@@ -68,13 +59,26 @@ abstract class AbstractMigrationCommand extends AbstractCommand
 	}
 
 	/**
-	 * Prepare the migration database for running.
+	 * Get the path to the database migrations.
 	 *
-	 * @param   InputInterface  $input  The input to process.
+	 * @return  string[]
+	 */
+	protected function getMigrationsPaths(): array
+	{
+		return [dirname(__DIR__, 3) . '/migrations'];
+	}
+
+	/**
+	 * Internal hook to initialise the command after the input has been bound and before the input is validated.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
 	 *
 	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
-	protected function prepareDatabase(InputInterface $input): void
+	protected function initialise(InputInterface $input, OutputInterface $output): void
 	{
 		$database = $input->getOption('database');
 
