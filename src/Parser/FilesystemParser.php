@@ -60,15 +60,36 @@ final class FilesystemParser
 				continue;
 			}
 
-			try
+			$evaluated = $parser->parse('<?php ' . $line);
+
+			if (empty($evaluated))
 			{
-				$data = $this->parseClassmapFileLine($line, $parser);
-			}
-			catch (\RuntimeException $exception)
-			{
-				// Line has errors, continue
 				continue;
 			}
+
+			/** @var StaticCall $expression */
+			$expression = $evaluated[0];
+
+			if ($expression->getType() !== 'Expr_StaticCall')
+			{
+				continue;
+			}
+
+			if ($expression->class->getFirst() !== 'JLoader' || $expression->name !== 'registerAlias')
+			{
+				continue;
+			}
+
+			if (count($expression->args) < 2 || count($expression->args) > 3)
+			{
+				continue;
+			}
+
+			$data = [
+				'alias'    => ltrim($expression->args[0]->value->value, '\\'),
+				'original' => ltrim($expression->args[1]->value->value, '\\'),
+				'version'  => isset($expression->args[2]) ? $expression->args[2]->value->value : '4.0',
+			];
 
 			// Skip if missing class names
 			if (empty($data['alias']) || empty($data['original']))
@@ -162,50 +183,5 @@ final class FilesystemParser
 			->files()
 			->name('*.php')
 			->in($directory);
-	}
-
-	/**
-	 * Parses a single line to extract the alias data from the classmap.
-	 *
-	 * @param   string  $line    The contents of the line to process.
-	 * @param   Parser  $parser  The element parser.
-	 *
-	 * @return  array
-	 *
-	 * @note    This method is inspired by the \Akeeba\JTypeHints\Engine\Parser class,
-	 *          adapted for this application and the different PHPParser package dependencies.
-	 */
-	private function parseClassmapFileLine(string $line, Parser $parser): array
-	{
-		$evaluated = $parser->parse('<?php ' . $line);
-
-		if (empty($evaluated))
-		{
-			throw new \RuntimeException("Not a valid expression statement");
-		}
-
-		/** @var StaticCall $expression */
-		$expression = $evaluated[0];
-
-		if ($expression->getType() !== 'Expr_StaticCall')
-		{
-			throw new \RuntimeException("Not a valid static call line");
-		}
-
-		if (($expression->class->getFirst() !== 'JLoader') || ($expression->name !== 'registerAlias'))
-		{
-			throw new \RuntimeException("Not a call to JLoader::registerAlias");
-		}
-
-		if ((count($expression->args) < 2) || (count($expression->args) > 3))
-		{
-			throw new \RuntimeException("Unknown call format to JLoader::registerAlias");
-		}
-
-		return [
-			'alias'    => ltrim($expression->args[0]->value->value, '\\'),
-			'original' => ltrim($expression->args[1]->value->value, '\\'),
-			'version'  => isset($expression->args[2]) ? $expression->args[2]->value->value : '4.0',
-		];
 	}
 }
