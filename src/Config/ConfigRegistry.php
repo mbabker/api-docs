@@ -46,7 +46,7 @@ class ConfigRegistry implements Repository, \ArrayAccess
 	{
 		if (!method_exists($this->registry, $name))
 		{
-			throw new \BadMethodCallException(sprintf('Call to undefined method %s::$s', static::class, $name));
+			throw new \BadMethodCallException(sprintf('Call to undefined method %s::%s', static::class, $name));
 		}
 
 		return call_user_func([$this->registry, $name], ...$arguments);
