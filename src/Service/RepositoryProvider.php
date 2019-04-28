@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
+use Joomla\ApiDocumentation\Repository\ClassPropertyRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
 use Joomla\ApiDocumentation\Repository\FunctionRepository;
 use Joomla\ApiDocumentation\Repository\InterfaceMethodRepository;
@@ -31,6 +32,7 @@ final class RepositoryProvider implements ServiceProviderInterface
 	public function register(Container $container)
 	{
 		$container->share(ClassMethodRepository::class, [$this, 'getClassMethodRepositoryClassService']);
+		$container->share(ClassPropertyRepository::class, [$this, 'getClassPropertyRepositoryClassService']);
 		$container->share(ClassRepository::class, [$this, 'getClassRepositoryClassService']);
 		$container->share(FunctionRepository::class, [$this, 'getFunctionRepositoryClassService']);
 		$container->share(InterfaceMethodRepository::class, [$this, 'getInterfaceMethodRepositoryClassService']);
@@ -47,6 +49,18 @@ final class RepositoryProvider implements ServiceProviderInterface
 	public function getClassMethodRepositoryClassService(Container $container): ClassMethodRepository
 	{
 		return new ClassMethodRepository;
+	}
+
+	/**
+	 * Get the ClassProperty model repository class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ClassPropertyRepository
+	 */
+	public function getClassPropertyRepositoryClassService(Container $container): ClassPropertyRepository
+	{
+		return new ClassPropertyRepository;
 	}
 
 	/**

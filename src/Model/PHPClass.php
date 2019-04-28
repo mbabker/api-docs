@@ -16,13 +16,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Model defining a PHP class.
  *
- * @property  boolean                    $final
- * @property  boolean                    $abstract
- * @property  PHPClass                   $parent
- * @property  integer|null               $parent_id
- * @property  Collection|PHPClass[]      $children
- * @property  Collection|PHPInterface[]  $implements
- * @property  Collection|ClassMethod[]   $methods
+ * @property  boolean                     $final
+ * @property  boolean                     $abstract
+ * @property  PHPClass                    $parent
+ * @property  integer|null                $parent_id
+ * @property  Collection|PHPClass[]       $children
+ * @property  Collection|PHPInterface[]   $implements
+ * @property  Collection|ClassMethod[]    $methods
+ * @property  Collection|ClassProperty[]  $properties
  */
 final class PHPClass extends AbstractClass
 {
@@ -96,5 +97,15 @@ final class PHPClass extends AbstractClass
 	public function parent(): BelongsTo
 	{
 		return $this->belongsTo(static::class);
+	}
+
+	/**
+	 * Defines the relationship for a PHP class to its properties.
+	 *
+	 * @return  HasMany
+	 */
+	public function properties(): HasMany
+	{
+		return $this->hasMany(ClassProperty::class);
 	}
 }

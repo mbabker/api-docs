@@ -10,6 +10,7 @@ namespace Joomla\ApiDocumentation\Importer;
 
 use Joomla\ApiDocumentation\Model\Version;
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
+use Joomla\ApiDocumentation\Repository\ClassPropertyRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
 use Joomla\ApiDocumentation\Repository\FunctionRepository;
 use Joomla\ApiDocumentation\Repository\InterfaceMethodRepository;
@@ -33,6 +34,13 @@ final class ParsedDataImporter
 	 * @var  ClassMethodRepository
 	 */
 	private $classMethodRepository;
+
+	/**
+	 * ClassProperty model repository.
+	 *
+	 * @var  ClassPropertyRepository
+	 */
+	private $classPropertyRepository;
 
 	/**
 	 * PHPFunction model repository.
@@ -60,6 +68,7 @@ final class ParsedDataImporter
 	 *
 	 * @param   ClassRepository            $classRepository            PHPClass model repository.
 	 * @param   ClassMethodRepository      $classMethodRepository      ClassMethod model repository.
+	 * @param   ClassPropertyRepository    $classPropertyRepository    ClassProperty model repository.
 	 * @param   FunctionRepository         $functionRepository         PHPFunction model repository.
 	 * @param   InterfaceRepository        $interfaceRepository        PHPInterface model repository.
 	 * @param   InterfaceMethodRepository  $interfaceMethodRepository  InterfaceMethod model repository.
@@ -67,6 +76,7 @@ final class ParsedDataImporter
 	public function __construct(
 		ClassRepository $classRepository,
 		ClassMethodRepository $classMethodRepository,
+		ClassPropertyRepository $classPropertyRepository,
 		FunctionRepository $functionRepository,
 		InterfaceRepository $interfaceRepository,
 		InterfaceMethodRepository $interfaceMethodRepository
@@ -74,6 +84,7 @@ final class ParsedDataImporter
 	{
 		$this->classRepository           = $classRepository;
 		$this->classMethodRepository     = $classMethodRepository;
+		$this->classPropertyRepository   = $classPropertyRepository;
 		$this->functionRepository        = $functionRepository;
 		$this->interfaceRepository       = $interfaceRepository;
 		$this->interfaceMethodRepository = $interfaceMethodRepository;
@@ -108,6 +119,11 @@ final class ParsedDataImporter
 				foreach ($class['methods'] as $method)
 				{
 					$methodModel = $this->classMethodRepository->createOrUpdateFromMethodNode($method, $classModel);
+				}
+
+				foreach ($class['properties'] as $property)
+				{
+					$methodModel = $this->classPropertyRepository->createOrUpdateFromPropertyNode($property, $classModel);
 				}
 			}
 
