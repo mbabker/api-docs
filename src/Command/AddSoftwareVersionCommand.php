@@ -8,9 +8,6 @@
 
 namespace Joomla\ApiDocumentation\Command;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
-use Joomla\ApiDocumentation\Model\Software;
 use Joomla\ApiDocumentation\Model\Version;
 use Joomla\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,7 +42,7 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 
 		$symfonyStyle->title('Add Software Version');
 
-		$software = $this->getSoftware($input);
+		$software = $this->getSoftware($input, $symfonyStyle);
 
 		if (!$software)
 		{
@@ -58,25 +55,18 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 
 		// Sanity check, if version already exists do nothing
 		$versionExists = (bool) Version::query()
-			->whereHas(
-				'software',
-				function (Builder $query) use ($software)
-				{
-					$query->where('id', '=', $software->id);
-				}
-			)
+			->where('software', '=', $software)
 			->where('version', '=', $version)
 			->count();
 
 		if ($versionExists)
 		{
-			$symfonyStyle->warning("Version '$version' for the '{$software->name}' software already exists.");
+			$symfonyStyle->warning("Version '$version' for the '$software' software already exists.");
 
 			return 0;
 		}
 
-		$model = new Version(['version' => $version]);
-		$model->software()->associate($software);
+		$model = new Version(['software' => $software, 'version' => $version]);
 		$model->save();
 
 		$symfonyStyle->success('Version added.');
@@ -93,38 +83,32 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 	{
 		$this->setDescription('Add a new version of a software package');
 		$this->addArgument('version', InputArgument::REQUIRED, 'The version of software to add.');
-		$this->addOption('software', null, InputOption::VALUE_OPTIONAL, 'The ID of the software package to add the version to.');
+		$this->addOption('software', null, InputOption::VALUE_OPTIONAL, 'The name of the software package to add the version to.');
 	}
 
 	/**
 	 * Get the software package either from the request data or by prompting the user.
 	 *
-	 * @param   InputInterface  $input  The input to inject into the command.
+	 * @param   InputInterface  $input         The input to inject into the command.
+	 * @param   SymfonyStyle    $symfonyStyle  The output style object.
 	 *
-	 * @return  Software|null
+	 * @return  string|null
 	 */
-	private function getSoftware(InputInterface $input): ?Software
+	private function getSoftware(InputInterface $input, SymfonyStyle $symfonyStyle): ?string
 	{
-		/** @var Collection|Software[] $software */
-		$software = Software::all();
-		$softwareId = (int) $input->getOption('software');
+		$software = $input->getOption('software');
 
-		if (!$softwareId)
+		if (!$software)
 		{
-			$answer = $this->createSymfonyStyle()->choice(
+			$software = $symfonyStyle->choice(
 				'Please select a software package to add the version to',
-				$software->pluck('name', 'id')->toArray()
+				[
+					Version::SOFTWARE_CMS,
+					Version::SOFTWARE_FRAMEWORK,
+				]
 			);
-
-			/** @var Software $chosenSoftware */
-			$chosenSoftware = $software->firstWhere('name', '=', $answer);
-		}
-		else
-		{
-			/** @var Software $chosenSoftware */
-			$chosenSoftware = $software->find($softwareId);
 		}
 
-		return $chosenSoftware;
+		return $software;
 	}
 }

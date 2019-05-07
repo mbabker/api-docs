@@ -26,10 +26,8 @@ class CreateVersionsTable extends Migration
 			function (Blueprint $table)
 			{
 				$table->increments('id');
+				$table->string('software');
 				$table->string('version');
-
-				$table->integer('software_id')->nullable()->unsigned()->index();
-				$table->foreign('software_id')->references('id')->on('software')->onDelete('cascade');
 			}
 		);
 	}

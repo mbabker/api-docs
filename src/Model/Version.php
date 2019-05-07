@@ -10,21 +10,33 @@ namespace Joomla\ApiDocumentation\Model;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Model defining a version of software.
  *
  * @property  integer                   $id
+ * @property  string                    $software
  * @property  string                    $version
- * @property  Software                  $software
- * @property  integer|null              $software_id
  * @property  Collection|PHPClass[]     $classes
  * @property  Collection|PHPFunction[]  $functions
  */
 final class Version extends Model
 {
+	/**
+	 * Identifies this version of sofware as being a CMS release.
+	 *
+	 * @var  string
+	 */
+	public const SOFTWARE_CMS = 'cms';
+
+	/**
+	 * Identifies this version of sofware as being a Framework release.
+	 *
+	 * @var  string
+	 */
+	public const SOFTWARE_FRAMEWORK = 'framework';
+
 	/**
 	 * Indicates if the model should be timestamped.
 	 *
@@ -38,6 +50,7 @@ final class Version extends Model
 	 * @var  array
 	 */
 	protected $fillable = [
+		'software',
 		'version',
 	];
 
@@ -59,15 +72,5 @@ final class Version extends Model
 	public function functions(): HasMany
 	{
 		return $this->hasMany(PHPFunction::class);
-	}
-
-	/**
-	 * Defines the relationship for a version to the software it belongs to.
-	 *
-	 * @return  BelongsTo
-	 */
-	public function software(): BelongsTo
-	{
-		return $this->belongsTo(Software::class);
 	}
 }

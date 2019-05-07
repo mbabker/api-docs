@@ -153,11 +153,11 @@ final class NodeParser
 	public function parseFunction(FunctionReflector $reflector): array
 	{
 		return [
-			'name'      => $function->getShortName(),
-			'namespace' => $function->getNamespace(),
-			'aliases'   => $function->getNamespaceAliases(),
-			'arguments' => $this->parseArguments($function->getArguments()),
-			'docblock'  => $this->parseDocBlock($function),
+			'name'      => $reflector->getShortName(),
+			'namespace' => $reflector->getNamespace(),
+			'aliases'   => $reflector->getNamespaceAliases(),
+			'arguments' => $this->parseArguments($reflector->getArguments()),
+			'docblock'  => $this->parseDocBlock($reflector),
 		];
 	}
 

@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Command;
 
+use Joomla\ApiDocumentation\Model\Version;
 use Joomla\ApiDocumentation\Parser\FilesystemParser;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Registry\Registry;
@@ -30,9 +31,9 @@ final class ParseFilesCommand extends AbstractCommand
 	 * @todo   Make this more dynamic
 	 */
 	private const STABLE_RELEASES = [
-		'cms' => [
+		Version::SOFTWARE_CMS => [
 			'2.5' => '2.5.28',
-			'3.x' => '3.9.4',
+			'3.x' => '3.9.5',
 		]
 	];
 
@@ -91,16 +92,21 @@ final class ParseFilesCommand extends AbstractCommand
 		switch ($software)
 		{
 			case 'cms':
-				if (!isset(self::STABLE_RELEASES['cms'][$version]))
+				if (!isset(self::STABLE_RELEASES[Version::SOFTWARE_CMS][$version]))
 				{
 					$symfonyStyle->error("Unknown CMS version '$version'");
 
 					return 1;
 				}
 
-				$softwareVersion = self::STABLE_RELEASES['cms'][$version];
+				$softwareVersion = self::STABLE_RELEASES[Version::SOFTWARE_CMS][$version];
 
 				break;
+
+			case Version::SOFTWARE_FRAMEWORK:
+				$symfonyStyle->warning('The Framework is not supported at this time.');
+
+				return 1;
 
 			default:
 				$symfonyStyle->error("Unknown software package '$software'");
@@ -177,7 +183,7 @@ final class ParseFilesCommand extends AbstractCommand
 
 		$data['aliases'] = [];
 
-		if ($software === 'cms' && file_exists($joomlaDir . '/libraries/classmap.php'))
+		if ($software === Version::SOFTWARE_CMS && file_exists($joomlaDir . '/libraries/classmap.php'))
 		{
 			$symfonyStyle->comment('Processing classmap for aliases');
 
