@@ -12,6 +12,7 @@
         "illuminate/filesystem": "5.8.*",
         "joomla/application": "~2.0@dev",
         "joomla/console": "~2.0@dev",
+        "joomla/controller": "~2.0@dev",
         "joomla/di": "~2.0@dev",
         "joomla/event": "~2.0@dev",
         "joomla/filter": "~2.0@dev",

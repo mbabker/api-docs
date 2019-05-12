@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Service;
 
+use Joomla\ApiDocumentation\Controller\WrongCmsController;
 use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Controller\ContainerControllerResolver;
 use Joomla\Application\Controller\ControllerResolverInterface;
@@ -48,6 +49,14 @@ final class WebApplicationProvider implements ServiceProviderInterface
 			->share(ControllerResolverInterface::class, [$this, 'getControllerResolverService']);
 
 		$container->share(WebClient::class, [$this, 'getWebClientService']);
+
+		/*
+		 * MVC Layer
+		 */
+
+		// Controllers
+		$container->alias(WrongCmsController::class, 'controller.wrong.cms')
+			->share('controller.wrong.cms', [$this, 'getControllerWrongCmsService'], true);
 	}
 
 	/**
@@ -60,6 +69,21 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	public function getControllerResolverService(Container $container): ControllerResolverInterface
 	{
 		return new ContainerControllerResolver($container);
+	}
+
+	/**
+	 * Get the `controller.wrong.cms` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  WrongCmsController
+	 */
+	public function getControllerWrongCmsService(Container $container): WrongCmsController
+	{
+		return new WrongCmsController(
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 
 	/**
@@ -84,6 +108,34 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	public function getRouterService(Container $container): Router
 	{
 		$router = new Router;
+
+		/*
+		 * CMS Admin Panels
+		 */
+		$router->get(
+			'/administrator',
+			WrongCmsController::class
+		);
+
+		$router->get(
+			'/administrator/*',
+			WrongCmsController::class
+		);
+
+		$router->get(
+			'/wp-admin',
+			WrongCmsController::class
+		);
+
+		$router->get(
+			'/wp-admin/*',
+			WrongCmsController::class
+		);
+
+		$router->get(
+			'wp-login.php',
+			WrongCmsController::class
+		);
 
 		return $router;
 	}
