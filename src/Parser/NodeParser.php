@@ -155,7 +155,6 @@ final class NodeParser
 		return [
 			'name'      => $reflector->getShortName(),
 			'namespace' => $reflector->getNamespace(),
-			'aliases'   => $reflector->getNamespaceAliases(),
 			'arguments' => $this->parseArguments($reflector->getArguments()),
 			'docblock'  => $this->parseDocBlock($reflector),
 		];
@@ -259,7 +258,6 @@ final class NodeParser
 		{
 			$data = [
 				'name'       => $method->getShortName(),
-				'aliases'    => $method->getNamespaceAliases(),
 				'static'     => $method->isStatic(),
 				'visibility' => $method->getVisibility(),
 				'arguments'  => $this->parseArguments($method->getArguments()),
