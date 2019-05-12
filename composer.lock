@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00ddd009b7e0637b17d4e4df25c03d78",
+    "content-hash": "616434d01be5f3ab8b0c3d3333d8967f",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -752,6 +752,57 @@
             "time": "2019-03-03T17:47:11+00:00"
         },
         {
+            "name": "joomla/router",
+            "version": "dev-2.0-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/joomla-framework/router.git",
+                "reference": "8fe6a3263324e3d4605e8cfaf0e738df41021bba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/joomla-framework/router/zipball/8fe6a3263324e3d4605e8cfaf0e738df41021bba",
+                "reference": "8fe6a3263324e3d4605e8cfaf0e738df41021bba",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.0"
+            },
+            "require-dev": {
+                "jeremeamia/superclosure": "~1.0",
+                "joomla/coding-standards": "~2.0@alpha",
+                "joomla/console": "~2.0",
+                "phpunit/phpunit": "~6.3"
+            },
+            "suggest": {
+                "jeremeamia/superclosure": "If you use Closure controllers, and want to be able to cache / serialize the router, please install jeremeamia/superclosure:~1.0",
+                "joomla/console": "If you want to use the DebugRouterCommand class, please install joomla/console:~2.0"
+            },
+            "type": "joomla-package",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.0-dev": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Joomla\\Router\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Joomla Router Package",
+            "homepage": "https://github.com/joomla-framework/router",
+            "keywords": [
+                "framework",
+                "joomla",
+                "router"
+            ],
+            "time": "2019-03-24T00:20:52+00:00"
+        },
+        {
             "name": "joomla/string",
             "version": "dev-2.0-dev",
             "source": {
@@ -818,6 +869,52 @@
                 "string"
             ],
             "time": "2019-03-18T01:24:51+00:00"
+        },
+        {
+            "name": "joomla/uri",
+            "version": "dev-2.0-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/joomla-framework/uri.git",
+                "reference": "b051dacd379b419f63db35931626e8a743ff10e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/joomla-framework/uri/zipball/b051dacd379b419f63db35931626e8a743ff10e8",
+                "reference": "b051dacd379b419f63db35931626e8a743ff10e8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.0"
+            },
+            "require-dev": {
+                "joomla/coding-standards": "~2.0@alpha",
+                "joomla/test": "~1.0",
+                "phpunit/phpunit": "~6.3"
+            },
+            "type": "joomla-package",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.0-dev": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Joomla\\Uri\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Joomla Uri Package",
+            "homepage": "https://github.com/joomla-framework/uri",
+            "keywords": [
+                "framework",
+                "joomla",
+                "uri"
+            ],
+            "time": "2018-10-03T00:11:18+00:00"
         },
         {
             "name": "joomla/utilities",
@@ -2093,6 +2190,8 @@
         "joomla/filter": 20,
         "joomla/input": 20,
         "joomla/registry": 20,
+        "joomla/router": 20,
+        "joomla/uri": 20,
         "joomla/coding-standards": 20
     },
     "prefer-stable": true,

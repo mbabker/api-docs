@@ -24,6 +24,7 @@ use Joomla\ApiDocumentation\Service\EventProvider;
 use Joomla\ApiDocumentation\Service\LoggingProvider;
 use Joomla\ApiDocumentation\Service\ParserProvider;
 use Joomla\ApiDocumentation\Service\RepositoryProvider;
+use Joomla\ApiDocumentation\Service\WebApplicationProvider;
 use Joomla\Application\AbstractApplication;
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareInterface;
@@ -87,7 +88,8 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 			->registerServiceProvider(new EventProvider)
 			->registerServiceProvider(new LoggingProvider)
 			->registerServiceProvider(new ParserProvider)
-			->registerServiceProvider(new RepositoryProvider);
+			->registerServiceProvider(new RepositoryProvider)
+			->registerServiceProvider(new WebApplicationProvider);
 
 		$joomlaContainer->share('config.decorated', $config);
 
@@ -135,6 +137,11 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 	public function run(): void
 	{
 		$this->boot();
+
+		if (!$this->getContainer()->has(AbstractApplication::class))
+		{
+			throw new \RuntimeException('The application has not been registered with the container.');
+		}
 
 		$this->getContainer()->get(AbstractApplication::class)->execute();
 	}

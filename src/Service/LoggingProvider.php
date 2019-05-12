@@ -13,6 +13,7 @@ use Joomla\DI\ServiceProviderInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Monolog\Processor\WebProcessor;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -38,6 +39,7 @@ class LoggingProvider implements ServiceProviderInterface
 		 * Monolog Processors
 		 */
 		$container->share('monolog.processor.psr3', [$this, 'getMonologProcessorPsr3Service']);
+		$container->share('monolog.processor.web', [$this, 'getMonologProcessorWebService']);
 
 		/*
 		 * Application Loggers
@@ -80,6 +82,7 @@ class LoggingProvider implements ServiceProviderInterface
 			],
 			[
 				$container->get('monolog.processor.psr3'),
+				$container->get('monolog.processor.web'),
 			]
 		);
 	}
@@ -94,5 +97,17 @@ class LoggingProvider implements ServiceProviderInterface
 	public function getMonologProcessorPsr3Service(Container $container): PsrLogMessageProcessor
 	{
 		return new PsrLogMessageProcessor;
+	}
+
+	/**
+	 * Get the `monolog.processor.web` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  WebProcessor
+	 */
+	public function getMonologProcessorWebService(Container $container): WebProcessor
+	{
+		return new WebProcessor;
 	}
 }
