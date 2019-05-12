@@ -4,7 +4,7 @@
     "homepage": "http://github.com/joomla/api.joomla.org",
     "license": "GPL-2.0+",
     "require": {
-        "php": ">=7.1",
+        "php": "^7.2",
         "ext-json": "*",
         "ext-pdo": "*",
         "illuminate/console": "5.8.*",
@@ -42,7 +42,7 @@
     "config": {
         "optimize-autoloader": true,
         "platform": {
-            "php": "7.1.21"
+            "php": "7.2.18"
         },
         "preferred-install": "dist",
         "sort-packages": true
