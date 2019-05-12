@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Importer;
 
 use Joomla\ApiDocumentation\Model\Version;
+use Joomla\ApiDocumentation\Repository\ClassAliasRepository;
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
 use Joomla\ApiDocumentation\Repository\ClassPropertyRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
@@ -27,6 +28,13 @@ final class ParsedDataImporter
 	 * @var  ClassRepository
 	 */
 	private $classRepository;
+
+	/**
+	 * ClassAlias model repository.
+	 *
+	 * @var  ClassAliasRepository
+	 */
+	private $classAliasRepository;
 
 	/**
 	 * ClassMethod model repository.
@@ -67,6 +75,7 @@ final class ParsedDataImporter
 	 * Importer constructor.
 	 *
 	 * @param   ClassRepository            $classRepository            PHPClass model repository.
+	 * @param   ClassAliasRepository       $classAliasRepository       ClassAlias model repository.
 	 * @param   ClassMethodRepository      $classMethodRepository      ClassMethod model repository.
 	 * @param   ClassPropertyRepository    $classPropertyRepository    ClassProperty model repository.
 	 * @param   FunctionRepository         $functionRepository         PHPFunction model repository.
@@ -75,6 +84,7 @@ final class ParsedDataImporter
 	 */
 	public function __construct(
 		ClassRepository $classRepository,
+		ClassAliasRepository $classAliasRepository,
 		ClassMethodRepository $classMethodRepository,
 		ClassPropertyRepository $classPropertyRepository,
 		FunctionRepository $functionRepository,
@@ -83,6 +93,7 @@ final class ParsedDataImporter
 	)
 	{
 		$this->classRepository           = $classRepository;
+		$this->classAliasRepository      = $classAliasRepository;
 		$this->classMethodRepository     = $classMethodRepository;
 		$this->classPropertyRepository   = $classPropertyRepository;
 		$this->functionRepository        = $functionRepository;
@@ -131,6 +142,11 @@ final class ParsedDataImporter
 			{
 				$functionModel = $this->functionRepository->createOrUpdateFromFunctionNode($function, $version);
 			}
+		}
+
+		foreach ($data['aliases'] as $alias)
+		{
+			$this->classAliasRepository->createOrUpdateFromAliasNode($alias, $version);
 		}
 	}
 }

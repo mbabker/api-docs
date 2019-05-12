@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Service;
 
+use Joomla\ApiDocumentation\Repository\ClassAliasRepository;
 use Joomla\ApiDocumentation\Repository\ClassMethodRepository;
 use Joomla\ApiDocumentation\Repository\ClassPropertyRepository;
 use Joomla\ApiDocumentation\Repository\ClassRepository;
@@ -31,12 +32,25 @@ final class RepositoryProvider implements ServiceProviderInterface
 	 */
 	public function register(Container $container)
 	{
+		$container->share(ClassAliasRepository::class, [$this, 'getClassAliasRepositoryClassService']);
 		$container->share(ClassMethodRepository::class, [$this, 'getClassMethodRepositoryClassService']);
 		$container->share(ClassPropertyRepository::class, [$this, 'getClassPropertyRepositoryClassService']);
 		$container->share(ClassRepository::class, [$this, 'getClassRepositoryClassService']);
 		$container->share(FunctionRepository::class, [$this, 'getFunctionRepositoryClassService']);
 		$container->share(InterfaceMethodRepository::class, [$this, 'getInterfaceMethodRepositoryClassService']);
 		$container->share(InterfaceRepository::class, [$this, 'getInterfaceRepositoryClassService']);
+	}
+
+	/**
+	 * Get the ClassAlias model repository class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ClassAliasRepository
+	 */
+	public function getClassAliasRepositoryClassService(Container $container): ClassAliasRepository
+	{
+		return new ClassAliasRepository;
 	}
 
 	/**

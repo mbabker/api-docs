@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property  integer                   $id
  * @property  string                    $software
  * @property  string                    $version
+ * @property  Collection|ClassAlias[]   $aliases
  * @property  Collection|PHPClass[]     $classes
  * @property  Collection|PHPFunction[]  $functions
  */
@@ -53,6 +54,16 @@ final class Version extends Model
 		'software',
 		'version',
 	];
+
+	/**
+	 * Defines the relationship for a software version to the class aliases it has.
+	 *
+	 * @return  HasMany
+	 */
+	public function aliases(): HasMany
+	{
+		return $this->hasMany(ClassAlias::class);
+	}
 
 	/**
 	 * Defines the relationship for a software version to the PHP classes it has.

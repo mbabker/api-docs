@@ -51,7 +51,7 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 			return 1;
 		}
 
-		$version = $this->getApplication()->getConsoleInput()->getArgument('version');
+		$version = $input->getArgument('version');
 
 		// Sanity check, if version already exists do nothing
 		$versionExists = (bool) Version::query()
