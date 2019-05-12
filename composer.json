@@ -17,7 +17,7 @@
         "joomla/filter": "~2.0@dev",
         "joomla/input": "~2.0@dev",
         "joomla/registry": "~2.0@dev",
-        "monolog/monolog": "^1.23",
+        "monolog/monolog": "^1.24",
         "nikic/php-parser": "^1.4.1",
         "phpdocumentor/reflection": "^3.0.1",
         "symfony/console": "4.2.*",
@@ -27,7 +27,7 @@
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",
-        "squizlabs/php_codesniffer": "^2.9"
+        "squizlabs/php_codesniffer": "^2.9.2"
     },
     "replace": {
         "paragonie/random_compat": "*"
