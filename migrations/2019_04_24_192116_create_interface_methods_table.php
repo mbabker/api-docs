@@ -29,6 +29,8 @@ class CreateInterfaceMethodsTable extends Migration
 				$table->string('name');
 				$table->text('summary');
 				$table->text('description');
+				$table->text('return_types')->nullable();
+				$table->text('return_description')->nullable();
 				$table->boolean('static')->default(false);
 				$table->string('visibility');
 

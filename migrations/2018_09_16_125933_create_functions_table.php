@@ -31,6 +31,8 @@ class CreateFunctionsTable extends Migration
 				$table->string('shortname');
 				$table->text('summary');
 				$table->text('description');
+				$table->text('return_types')->nullable();
+				$table->text('return_description')->nullable();
 
 				$table->integer('version_id')->nullable()->unsigned()->index();
 				$table->foreign('version_id')->references('id')->on('versions')->onDelete('cascade');

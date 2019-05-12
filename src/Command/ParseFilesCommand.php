@@ -33,7 +33,7 @@ final class ParseFilesCommand extends AbstractCommand
 	private const STABLE_RELEASES = [
 		Version::SOFTWARE_CMS => [
 			'2.5' => '2.5.28',
-			'3.x' => '3.9.5',
+			'3.x' => '3.9.6',
 		]
 	];
 

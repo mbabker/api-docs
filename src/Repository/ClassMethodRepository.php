@@ -59,32 +59,51 @@ final class ClassMethodRepository
 
 		$methodModel->save();
 
-		// Process tags for a deprecation if one exists
+		// Process docblock tags if present
 		if (isset($methodNode['docblock']['tags']))
 		{
 			foreach ($methodNode['docblock']['tags'] as $tagNode)
 			{
-				if ($tagNode['name'] !== 'deprecated')
+				if (!isset($tagNode['name']))
 				{
 					continue;
 				}
 
-				/** @var Deprecation $deprecationModel */
-				$deprecationModel = $methodModel->deprecation ?: Deprecation::make();
+				switch ($tagNode['name'])
+				{
+					case 'deprecated':
+						/** @var Deprecation $deprecationModel */
+						$deprecationModel = $methodModel->deprecation ?: Deprecation::make();
 
-				$deprecationModel->fill(
-					[
-						'description'     => $tagNode['description'],
-						'removal_version' => $tagNode['version'],
-					]
-				);
+						$deprecationModel->fill(
+							[
+								'description'     => $tagNode['description'],
+								'removal_version' => $tagNode['version'],
+							]
+						);
 
-				$deprecationModel->deprecatable()->associate($methodModel);
+						$deprecationModel->deprecatable()->associate($methodModel);
 
-				$deprecationModel->save();
+						$deprecationModel->save();
 
-				// We can break the loop safely
-				break;
+						break;
+
+					case 'return':
+						$methodModel->fill(
+							[
+								'return_types'       => $tagNode['types'],
+								'return_description' => $tagNode['description'],
+							]
+						);
+
+						$methodModel->save();
+
+						break;
+
+					default:
+						// Unknown or unsupported tag
+						break;
+				}
 			}
 		}
 

@@ -26,9 +26,10 @@ final class ClassMethod extends AbstractMethod
 	 * @var  array
 	 */
 	protected $casts = [
-		'final'    => 'boolean',
-		'abstract' => 'boolean',
-		'static'   => 'boolean',
+		'return_types' => 'array',
+		'static'       => 'boolean',
+		'final'        => 'boolean',
+		'abstract'     => 'boolean',
 	];
 
 	/**
@@ -40,6 +41,8 @@ final class ClassMethod extends AbstractMethod
 		'name',
 		'summary',
 		'description',
+		'return_types',
+		'return_description',
 		'final',
 		'abstract',
 		'static',

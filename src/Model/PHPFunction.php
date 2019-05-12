@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * @property  string                 $shortname
  * @property  string                 $summary
  * @property  string                 $description
+ * @property  array                  $return_types
+ * @property  string                 $return_description
  * @property  Deprecation            $deprecation
  * @property  Version                $version
  * @property  integer|null           $version_id
@@ -38,6 +40,15 @@ final class PHPFunction extends Model
 	public $timestamps = false;
 
 	/**
+	 * The attributes that should be cast to native types.
+	 *
+	 * @var  array
+	 */
+	protected $casts = [
+		'return_types' => 'array',
+	];
+
+	/**
 	 * The attributes that are mass assignable.
 	 *
 	 * @var  array
@@ -48,6 +59,8 @@ final class PHPFunction extends Model
 		'shortname',
 		'summary',
 		'description',
+		'return_types',
+		'return_description',
 	];
 
 	/**

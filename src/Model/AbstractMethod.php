@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * @property  string                 $name
  * @property  string                 $summary
  * @property  string                 $description
+ * @property  array                  $return_types
+ * @property  string                 $return_description
  * @property  boolean                $static
  * @property  boolean                $visibility
  * @property  Deprecation            $deprecation
@@ -40,7 +42,8 @@ abstract class AbstractMethod extends Model
 	 * @var  array
 	 */
 	protected $casts = [
-		'static' => 'boolean',
+		'return_types' => 'array',
+		'static'       => 'boolean',
 	];
 
 	/**
@@ -52,6 +55,8 @@ abstract class AbstractMethod extends Model
 		'name',
 		'summary',
 		'description',
+		'return_types',
+		'return_description',
 		'static',
 		'visibility',
 	];

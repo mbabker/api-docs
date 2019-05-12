@@ -29,6 +29,8 @@ class CreateClassMethodsTable extends Migration
 				$table->string('name');
 				$table->text('summary');
 				$table->text('description');
+				$table->text('return_types')->nullable();
+				$table->text('return_description')->nullable();
 				$table->boolean('final')->default(false);
 				$table->boolean('abstract')->default(false);
 				$table->boolean('static')->default(false);
