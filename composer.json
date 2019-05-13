@@ -16,17 +16,21 @@
         "joomla/di": "~2.0@dev",
         "joomla/event": "~2.0@dev",
         "joomla/filter": "~2.0@dev",
+        "joomla/http": "~2.0@dev",
         "joomla/input": "~2.0@dev",
         "joomla/registry": "~2.0@dev",
+        "joomla/renderer": "~2.0@dev",
         "joomla/router": "~2.0@dev",
         "joomla/uri": "~2.0@dev",
         "monolog/monolog": "^1.24",
         "nikic/php-parser": "^1.4.1",
         "phpdocumentor/reflection": "^3.0.1",
+        "symfony/cache": "^4.2",
         "symfony/console": "4.2.*",
         "symfony/finder": "4.2.*",
         "symfony/process": "4.2.*",
-        "symfony/yaml": "4.2.*"
+        "symfony/yaml": "4.2.*",
+        "twig/twig": "~2.9"
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",

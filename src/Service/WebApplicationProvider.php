@@ -8,6 +8,7 @@
 
 namespace Joomla\ApiDocumentation\Service;
 
+use Joomla\ApiDocumentation\Controller\HomepageController;
 use Joomla\ApiDocumentation\Controller\WrongCmsController;
 use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Controller\ContainerControllerResolver;
@@ -18,6 +19,8 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Input\Input;
+use Joomla\Renderer\RendererInterface;
+use Joomla\Router\Route;
 use Joomla\Router\Router;
 use Psr\Log\LoggerInterface;
 
@@ -55,6 +58,9 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		 */
 
 		// Controllers
+		$container->alias(HomepageController::class, 'controller.homepage')
+			->share('controller.homepage', [$this, 'getControllerHomepageService'], true);
+
 		$container->alias(WrongCmsController::class, 'controller.wrong.cms')
 			->share('controller.wrong.cms', [$this, 'getControllerWrongCmsService'], true);
 	}
@@ -69,6 +75,22 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	public function getControllerResolverService(Container $container): ControllerResolverInterface
 	{
 		return new ContainerControllerResolver($container);
+	}
+
+	/**
+	 * Get the `controller.homepage` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  HomepageController
+	 */
+	public function getControllerHomepageService(Container $container): HomepageController
+	{
+		return new HomepageController(
+			$container->get(RendererInterface::class),
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 
 	/**
@@ -136,6 +158,11 @@ final class WebApplicationProvider implements ServiceProviderInterface
 			'wp-login.php',
 			WrongCmsController::class
 		);
+
+		/*
+		 * Web routes
+		 */
+		$router->addRoute(new Route(['GET', 'HEAD'], '/', HomepageController::class));
 
 		return $router;
 	}

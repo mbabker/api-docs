@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="blue" />
+        <meta property="og:description" content="{% block metaDescription %}The Joomla! API Documentation{% endblock %}" />
+        <meta property="og:image" content="https://cdn.joomla.org/images/sharing/joomla-org-og.jpg" />
+        <meta property="og:site_name" content="Joomla! API" />
+        <meta property="og:title" content="{{ block('title') }}" />
+        <meta property="og:url" content="{{ uri.request }}" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:description" content="{{ block('metaDescription') }}" />
+        <meta name="twitter:image" content="https://cdn.joomla.org/images/sharing/joomla-twitter-card.png" />
+        <meta name="twitter:site" content="@joomla" />
+        <meta name="twitter:title" content="{{ block('title') }}" />
+        {% block metadata %}{% endblock %}
+        <link rel="stylesheet" href="https://cdn.joomla.org/template/css/template_3.0.0.min.css" media="screen" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400" />
+        <style type="text/css">
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Open Sans', sans-serif;
+            }
+        </style>
+        {% block stylesheets %}{% endblock %}
+        <title>{% block title %}Joomla! Issue Tracker{% endblock %}</title>
+        <script>
+            var _prum = [['id', '59300ad15992c776ad970068'],
+                        ['mark', 'firstbyte', (new Date()).getTime()]];
+            (function() {
+                var s = document.getElementsByTagName('script')[0]
+                , p = document.createElement('script');
+                p.async = 'async';
+                p.src = 'https://rum-static.pingdom.net/prum.min.js';
+                s.parentNode.insertBefore(p, s);
+            })();
+        </script>
+    </head>
+    <body class="site">
+        <!-- Google Tag Manager -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDWJB8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-M7HXQ7');</script>
+        <!-- End Google Tag Manager -->
+        {% block nav %}
+            <nav class="navigation" role="navigation">
+                <div id="mega-menu" class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            {% block topnav %}
+                                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </a>
+
+                                {{ cdn_menu() }}
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        {% endblock %}
+
+        <header class="header">
+            <div class="container">
+                <div class="row-fluid">
+                    {% block header %}
+                        <div class="span7">
+                            <h1 class="page-title"><a href="{{ route('') }}">{% block pageTitle %}Joomla! API{% endblock %}</a></h1>
+                        </div>
+                        <div class="span5">
+                            <div class="btn-toolbar pull-right">
+                                <div class="btn-group">
+                                    <a href="https://downloads.joomla.org" class="btn btn-large btn-warning">Download</a>
+                                </div>
+                                <div class="btn-group">
+                                    <a href="https://launch.joomla.org" class="btn btn-large btn-primary">Launch</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </header>
+
+        <div class="subnav-wrapper">
+            <div class="subnav">
+                <div class="container">
+                    {% block subnav %}
+                        <ul class="nav menu nav-pills">
+                            <li>
+                                <a href="{{ route('') }}">Joomla! API Index</a>
+                            </li>
+                        </ul>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <div class="body">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+
+        <div class="footer center">
+            <div class="container">
+                {% block footer %}
+                    <hr />
+                    {{ cdn_footer() }}
+                {% endblock %}
+            </div>
+        </div>
+
+        {% block scripts %}
+            <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+            <script src="https://code.jquery.com/jquery-migrate-1.4.1.min.js"></script>
+            <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+            <script>
+                jQuery(document).ready(function ($) {
+                    var navTop;
+                    var isFixed = false;
+
+                    $('.hasTooltip').tooltip();
+                    processScrollInit();
+                    processScroll();
+
+                    function processScrollInit() {
+                        if ($('.subnav-wrapper').length) {
+                            navTop = $('.subnav-wrapper').length && $('.subnav-wrapper').offset().top - 30;
+
+                            // Fix the container top
+                            $('.body .container-main').css('top', $('.subnav-wrapper').height() + $('#mega-menu').height());
+
+                            // Only apply the scrollspy when the toolbar is not collapsed
+                            if (document.body.clientWidth > 480) {
+                                $('.subnav-wrapper').height($('.subnav').outerHeight());
+                                $('.subnav').affix({
+                                    offset: {top: $('.subnav').offset().top - $('#mega-menu').height()}
+                                });
+                            }
+                        }
+                    }
+
+                    function processScroll() {
+                        if ($('.subnav-wrapper').length) {
+                            var scrollTop = $(window).scrollTop();
+                            if (scrollTop >= navTop && !isFixed) {
+                                isFixed = true;
+                                $('.subnav-wrapper').addClass('subhead-fixed');
+
+                                // Fix the container top
+                                $('.body .container-main').css('top', $('.subnav-wrapper').height() + $('#mega-menu').height());
+                            } else if (scrollTop <= navTop && isFixed) {
+                                isFixed = false;
+                                $('.subnav-wrapper').removeClass('subhead-fixed');
+                            }
+                        }
+                    }
+                });
+            </script>
+        {% endblock %}
+    </body>
+</html>

@@ -19,11 +19,14 @@ use Illuminate\Database\Schema\Builder;
 use Illuminate\Filesystem\Filesystem;
 use Joomla\ApiDocumentation\Config\ConfigRegistry;
 use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
+use Joomla\ApiDocumentation\Service\CacheProvider;
 use Joomla\ApiDocumentation\Service\ConsoleProvider;
 use Joomla\ApiDocumentation\Service\EventProvider;
+use Joomla\ApiDocumentation\Service\HttpProvider;
 use Joomla\ApiDocumentation\Service\LoggingProvider;
 use Joomla\ApiDocumentation\Service\ParserProvider;
 use Joomla\ApiDocumentation\Service\RepositoryProvider;
+use Joomla\ApiDocumentation\Service\TwigProvider;
 use Joomla\ApiDocumentation\Service\WebApplicationProvider;
 use Joomla\Application\AbstractApplication;
 use Joomla\DI\Container;
@@ -84,14 +87,16 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 		$laravelContainer->alias('config', Repository::class);
 
 		$joomlaContainer = (new Container($laravelContainer))
+			->share('config.decorated', $config)
+			->registerServiceProvider(new CacheProvider)
 			->registerServiceProvider(new ConsoleProvider)
 			->registerServiceProvider(new EventProvider)
+			->registerServiceProvider(new HttpProvider)
 			->registerServiceProvider(new LoggingProvider)
 			->registerServiceProvider(new ParserProvider)
 			->registerServiceProvider(new RepositoryProvider)
+			->registerServiceProvider(new TwigProvider)
 			->registerServiceProvider(new WebApplicationProvider);
-
-		$joomlaContainer->share('config.decorated', $config);
 
 		// Configure Laravel container service providers
 		(new DatabaseServiceProvider($laravelContainer))->register();
