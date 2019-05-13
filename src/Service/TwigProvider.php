@@ -10,6 +10,7 @@ namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Service\Exception\InvalidConfigurationException;
 use Joomla\ApiDocumentation\Twig\CdnExtension;
+use Joomla\ApiDocumentation\Twig\PhpExtension;
 use Joomla\ApiDocumentation\Twig\RoutingExtension;
 use Joomla\ApiDocumentation\Twig\Service\CdnRenderer;
 use Joomla\ApiDocumentation\Twig\Service\Router;
@@ -76,6 +77,8 @@ final class TwigProvider implements ServiceProviderInterface
 		$container->alias(\Twig_Extension_Debug::class, DebugExtension::class)
 			->share(DebugExtension::class, [$this, 'getTwigExtensionDebugService']);
 
+		$container->share(PhpExtension::class, [$this, 'getTwigExtensionPhpService']);
+
 		$container->share(RoutingExtension::class, [$this, 'getTwigExtensionRoutingService']);
 
 		/*
@@ -141,12 +144,12 @@ final class TwigProvider implements ServiceProviderInterface
 
 		// Pull down the renderer config
 		$cacheEnabled = $config->get('twig.cache.enabled', false);
-		$cachePath    = $config->get('twig.cache.path', 'cache/twig');
+		$cachePath    = $config->get('twig.cache.path', dirname(__DIR__, 2) . '/cache/twig');
 		$debug        = $config->get('twig.debug', false);
 
 		if ($debug === false && $cacheEnabled !== false)
 		{
-			return new FilesystemCache(JPATH_ROOT . '/' . $cachePath);
+			return new FilesystemCache($cachePath);
 		}
 
 		return new NullCache;
@@ -205,6 +208,18 @@ final class TwigProvider implements ServiceProviderInterface
 	public function getTwigExtensionDebugService(Container $container): DebugExtension
 	{
 		return new DebugExtension;
+	}
+
+	/**
+	 * Get the Twig PHP extension class service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  PhpExtension
+	 */
+	public function getTwigExtensionPhpService(Container $container): PhpExtension
+	{
+		return new PhpExtension;
 	}
 
 	/**
@@ -271,6 +286,7 @@ final class TwigProvider implements ServiceProviderInterface
 
 		$twigExtensions = [
 			CdnExtension::class,
+			PhpExtension::class,
 			RoutingExtension::class,
 		];
 

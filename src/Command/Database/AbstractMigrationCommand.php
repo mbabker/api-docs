@@ -75,8 +75,6 @@ abstract class AbstractMigrationCommand extends AbstractCommand
 	 * @param   OutputInterface  $output  The output to inject into the command.
 	 *
 	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
 	 */
 	protected function initialise(InputInterface $input, OutputInterface $output): void
 	{

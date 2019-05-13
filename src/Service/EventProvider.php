@@ -13,6 +13,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\Dispatcher;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Renderer\RendererInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -64,7 +65,10 @@ final class EventProvider implements ServiceProviderInterface
 	 */
 	public function getErrorSubscriber(Container $container): ErrorSubscriber
 	{
-		$subscriber = new ErrorSubscriber;
+		$subscriber = new ErrorSubscriber(
+			$container->get(RendererInterface::class)
+		);
+
 		$subscriber->setLogger($container->get(LoggerInterface::class));
 
 		return $subscriber;
