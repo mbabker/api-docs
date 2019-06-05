@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Joomla! {{ version.display_name }} API Documentation</h1>
+    </div>
+    <p class="lead">This section provides the API reference for the Joomla! {{ version.display_name }} {{ version.version }} branch.</p>
+    <div class="row-fluid">
+        <main class="span9">
+        </main>
+        <aside class="span3">
+            <div class="well">
+                <ul class="nav nav-list">
+                    <li class="nav-header">API Statistics</li>
+                    <li><span class="label label-info">{{ deprecation_count }}</span> Deprecated Elements</li>
+                    <li><span class="label label-info">{{ class_count }}</span> Classes</li>
+                    <li><span class="label label-info">{{ interface_count }}</span> Interfaces</li>
+                    <li><span class="label label-info">{{ function_count }}</span> Functions</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

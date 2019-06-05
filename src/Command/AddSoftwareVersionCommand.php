@@ -42,13 +42,14 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 
 		$symfonyStyle->title('Add Software Version');
 
-		$software = $this->getSoftware($input, $symfonyStyle);
+		$software = $input->getOption('software');
 
 		if (!$software)
 		{
-			$symfonyStyle->error('Software not found.');
-
-			return 1;
+			$software = $symfonyStyle->choice(
+				'Please select a software package to add the version to',
+				Version::getSupportedSoftware()
+			);
 		}
 
 		$version = $input->getArgument('version');
@@ -66,7 +67,14 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 			return 0;
 		}
 
-		$model = new Version(['software' => $software, 'version' => $version]);
+		$displayName = $input->getOption('display_name');
+
+		if (!$displayName)
+		{
+			$displayName = $symfonyStyle->ask('What is the display name for the software');
+		}
+
+		$model = new Version(['software' => $software, 'version' => $version, 'display_name' => $displayName]);
 		$model->save();
 
 		$symfonyStyle->success('Version added.');
@@ -84,31 +92,6 @@ final class AddSoftwareVersionCommand extends AbstractCommand
 		$this->setDescription('Add a new version of a software package');
 		$this->addArgument('version', InputArgument::REQUIRED, 'The version of software to add.');
 		$this->addOption('software', null, InputOption::VALUE_OPTIONAL, 'The name of the software package to add the version to.');
-	}
-
-	/**
-	 * Get the software package either from the request data or by prompting the user.
-	 *
-	 * @param   InputInterface  $input         The input to inject into the command.
-	 * @param   SymfonyStyle    $symfonyStyle  The output style object.
-	 *
-	 * @return  string|null
-	 */
-	private function getSoftware(InputInterface $input, SymfonyStyle $symfonyStyle): ?string
-	{
-		$software = $input->getOption('software');
-
-		if (!$software)
-		{
-			$software = $symfonyStyle->choice(
-				'Please select a software package to add the version to',
-				[
-					Version::SOFTWARE_CMS,
-					Version::SOFTWARE_FRAMEWORK,
-				]
-			);
-		}
-
-		return $software;
+		$this->addOption('display_name', null, InputOption::VALUE_OPTIONAL, 'The display name of the software package to add the version to.');
 	}
 }

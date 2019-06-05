@@ -9,7 +9,11 @@
 namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Controller\HomepageController;
+use Joomla\ApiDocumentation\Controller\SoftwareVersion\DashboardController;
+use Joomla\ApiDocumentation\Controller\SoftwareVersion\RedirectToLatestVersionDashboardController;
 use Joomla\ApiDocumentation\Controller\WrongCmsController;
+use Joomla\ApiDocumentation\Model\Version;
+use Joomla\ApiDocumentation\Repository\VersionRepository;
 use Joomla\Application\AbstractWebApplication;
 use Joomla\Application\Controller\ContainerControllerResolver;
 use Joomla\Application\Controller\ControllerResolverInterface;
@@ -58,11 +62,10 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		 */
 
 		// Controllers
-		$container->alias(HomepageController::class, 'controller.homepage')
-			->share('controller.homepage', [$this, 'getControllerHomepageService'], true);
-
-		$container->alias(WrongCmsController::class, 'controller.wrong.cms')
-			->share('controller.wrong.cms', [$this, 'getControllerWrongCmsService'], true);
+		$container->share(HomepageController::class, [$this, 'getHomepageControllerService']);
+		$container->share(DashboardController::class, [$this, 'getSoftwareVersionDashboardControllerService']);
+		$container->share(RedirectToLatestVersionDashboardController::class, [$this, 'getRedirectToLatestVersionDashboardControllerService']);
+		$container->share(WrongCmsController::class, [$this, 'getWrongCmsControllerService']);
 	}
 
 	/**
@@ -78,31 +81,16 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	}
 
 	/**
-	 * Get the `controller.homepage` service
+	 * Get the HomepageController class service
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
 	 * @return  HomepageController
 	 */
-	public function getControllerHomepageService(Container $container): HomepageController
+	public function getHomepageControllerService(Container $container): HomepageController
 	{
 		return new HomepageController(
 			$container->get(RendererInterface::class),
-			$container->get(WebApplication::class),
-			$container->get(Input::class)
-		);
-	}
-
-	/**
-	 * Get the `controller.wrong.cms` service
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  WrongCmsController
-	 */
-	public function getControllerWrongCmsService(Container $container): WrongCmsController
-	{
-		return new WrongCmsController(
 			$container->get(WebApplication::class),
 			$container->get(Input::class)
 		);
@@ -118,6 +106,21 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	public function getInputService(Container $container): Input
 	{
 		return new Input($_REQUEST);
+	}
+
+	/**
+	 * Get the RedirectToLatestVersionDashboardController class service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  RedirectToLatestVersionDashboardController
+	 */
+	public function getRedirectToLatestVersionDashboardControllerService(Container $container): RedirectToLatestVersionDashboardController
+	{
+		return new RedirectToLatestVersionDashboardController(
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 
 	/**
@@ -164,7 +167,40 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		 */
 		$router->addRoute(new Route(['GET', 'HEAD'], '/', HomepageController::class));
 
+		$router->get(
+			'/:software',
+			RedirectToLatestVersionDashboardController::class,
+			[
+				'software' => implode('|', Version::getSupportedSoftware()),
+			]
+		);
+
+		$router->get(
+			'/:software/:version',
+			DashboardController::class,
+			[
+				'software' => implode('|', Version::getSupportedSoftware()),
+			]
+		);
+
 		return $router;
+	}
+
+	/**
+	 * Get the DashboardController class service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  DashboardController
+	 */
+	public function getSoftwareVersionDashboardControllerService(Container $container): DashboardController
+	{
+		return new DashboardController(
+			$container->get(RendererInterface::class),
+			$container->get(VersionRepository::class),
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 
 	/**
@@ -206,5 +242,20 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		$acceptLanguage = $input->server->getString('HTTP_ACCEPT_LANGUAGE', '');
 
 		return new WebClient($userAgent, $acceptEncoding, $acceptLanguage);
+	}
+
+	/**
+	 * Get the WrongCmsController class service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  WrongCmsController
+	 */
+	public function getWrongCmsControllerService(Container $container): WrongCmsController
+	{
+		return new WrongCmsController(
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 }

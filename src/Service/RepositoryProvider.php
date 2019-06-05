@@ -15,6 +15,7 @@ use Joomla\ApiDocumentation\Repository\ClassRepository;
 use Joomla\ApiDocumentation\Repository\FunctionRepository;
 use Joomla\ApiDocumentation\Repository\InterfaceMethodRepository;
 use Joomla\ApiDocumentation\Repository\InterfaceRepository;
+use Joomla\ApiDocumentation\Repository\VersionRepository;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
@@ -39,6 +40,7 @@ final class RepositoryProvider implements ServiceProviderInterface
 		$container->share(FunctionRepository::class, [$this, 'getFunctionRepositoryClassService']);
 		$container->share(InterfaceMethodRepository::class, [$this, 'getInterfaceMethodRepositoryClassService']);
 		$container->share(InterfaceRepository::class, [$this, 'getInterfaceRepositoryClassService']);
+		$container->share(VersionRepository::class, [$this, 'getVersionRepositoryClassService']);
 	}
 
 	/**
@@ -123,5 +125,17 @@ final class RepositoryProvider implements ServiceProviderInterface
 	public function getInterfaceRepositoryClassService(Container $container): InterfaceRepository
 	{
 		return new InterfaceRepository;
+	}
+
+	/**
+	 * Get the Version model repository class service.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  VersionRepository
+	 */
+	public function getVersionRepositoryClassService(Container $container): VersionRepository
+	{
+		return new VersionRepository;
 	}
 }

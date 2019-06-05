@@ -30,7 +30,8 @@
         "symfony/finder": "4.3.*",
         "symfony/process": "4.3.*",
         "symfony/yaml": "4.3.*",
-        "twig/twig": "^2.11.1"
+        "twig/twig": "^2.11.1",
+        "zendframework/zend-diactoros": "^2.1.2"
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",

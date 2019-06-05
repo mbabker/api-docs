@@ -22,10 +22,23 @@
         </properties>
     </rule>
 
+    <!-- Excluded to allow snake case model relation names -->
+    <rule ref="Joomla.NamingConventions.ValidFunctionName.ScopeNotCamelCaps">
+        <exclude-pattern>src/Model/Version.php</exclude-pattern>
+    </rule>
+
     <!-- Excluded to allow snake case database column names -->
-   	<rule ref="Joomla.NamingConventions.ValidVariableName.NotCamelCaps">
-   		<exclude-pattern>src/Repository/ClassRepository.php</exclude-pattern>
-   		<exclude-pattern>src/Repository/InterfaceRepository.php</exclude-pattern>
-   	</rule>
+    <rule ref="Joomla.NamingConventions.ValidVariableName.NotCamelCaps">
+        <exclude-pattern>src/Repository/ClassRepository.php</exclude-pattern>
+        <exclude-pattern>src/Repository/InterfaceRepository.php</exclude-pattern>
+    </rule>
+
+    <!-- Extend the line length to avoid the need for goofy concatenation or sprintf -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="200" />
+            <property name="absoluteLineLimit" value="0" />
+        </properties>
+    </rule>
 
 </ruleset>

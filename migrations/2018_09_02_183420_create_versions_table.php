@@ -28,6 +28,7 @@ class CreateVersionsTable extends Migration
 				$table->increments('id');
 				$table->string('software');
 				$table->string('version');
+				$table->string('display_name');
 			}
 		);
 	}
