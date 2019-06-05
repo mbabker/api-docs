@@ -13,7 +13,7 @@ use Zend\Diactoros\Response\TextResponse;
 /**
  * Controller class to display a message to individuals looking for the wrong CMS.
  */
-class WrongCmsController extends AbstractController
+final class WrongCmsController extends AbstractController
 {
 	/**
 	 * Execute the controller.

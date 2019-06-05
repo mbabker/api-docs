@@ -16,7 +16,7 @@ use Zend\Diactoros\Response\HtmlResponse;
 /**
  * Controller class to display the site homepage.
  */
-class HomepageController extends AbstractController
+final class HomepageController extends AbstractController
 {
 	/**
 	 * The view renderer.
