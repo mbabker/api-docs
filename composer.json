@@ -25,12 +25,12 @@
         "monolog/monolog": "^1.24",
         "nikic/php-parser": "^1.4.1",
         "phpdocumentor/reflection": "^3.0.1",
-        "symfony/cache": "^4.2",
-        "symfony/console": "4.2.*",
-        "symfony/finder": "4.2.*",
-        "symfony/process": "4.2.*",
-        "symfony/yaml": "4.2.*",
-        "twig/twig": "~2.9"
+        "symfony/cache": "4.3.*",
+        "symfony/console": "4.3.*",
+        "symfony/finder": "4.3.*",
+        "symfony/process": "4.3.*",
+        "symfony/yaml": "4.3.*",
+        "twig/twig": "^2.11.1"
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",
