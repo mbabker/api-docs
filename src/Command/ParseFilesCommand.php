@@ -15,6 +15,7 @@ use Joomla\Registry\Registry;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
@@ -28,12 +29,12 @@ final class ParseFilesCommand extends AbstractCommand
 	 * Internal tracker of stable releases for select software
 	 *
 	 * @const  array
-	 * @todo   Make this more dynamic
+	 * @todo   Make this more dynamic, probably best off using downloads site API
 	 */
 	private const STABLE_RELEASES = [
 		Version::SOFTWARE_CMS => [
 			'2.5' => '2.5.28',
-			'3.x' => '3.9.6',
+			'3.x' => '3.9.8',
 		]
 	];
 
@@ -92,14 +93,21 @@ final class ParseFilesCommand extends AbstractCommand
 		switch ($software)
 		{
 			case 'cms':
-				if (!isset(self::STABLE_RELEASES[Version::SOFTWARE_CMS][$version]))
+				if ($input->getOption('release'))
 				{
-					$symfonyStyle->error("Unknown CMS version '$version'");
-
-					return 1;
+					$softwareVersion = $input->getOption('release');
 				}
+				else
+				{
+					if (!isset(self::STABLE_RELEASES[Version::SOFTWARE_CMS][$version]))
+					{
+						$symfonyStyle->error("Unknown CMS version '$version'");
 
-				$softwareVersion = self::STABLE_RELEASES[Version::SOFTWARE_CMS][$version];
+						return 1;
+					}
+
+					$softwareVersion = self::STABLE_RELEASES[Version::SOFTWARE_CMS][$version];
+				}
 
 				break;
 
@@ -207,5 +215,11 @@ final class ParseFilesCommand extends AbstractCommand
 		$this->setDescription('Parse the files for a given release');
 		$this->addArgument('software', InputArgument::REQUIRED, 'The software package to process');
 		$this->addArgument('version', InputArgument::REQUIRED, 'The software version to process');
+		$this->addOption(
+			'release',
+			null,
+			InputOption::VALUE_OPTIONAL,
+			'The release of the software version to process, if omitted then the latest release for the branch is used.'
+		);
 	}
 }
