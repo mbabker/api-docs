@@ -10,17 +10,13 @@ namespace Joomla\ApiDocumentation;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Container\Container as IlluminateContainer;
-use Illuminate\Database\Capsule\Manager;
-use Illuminate\Database\DatabaseServiceProvider;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Migrations\MigrationCreator as IlluminateMigrationCreator;
-use Illuminate\Database\Schema\Builder;
-use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\ServiceProvider;
 use Joomla\ApiDocumentation\Config\ConfigRegistry;
-use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
 use Joomla\ApiDocumentation\Service\CacheProvider;
 use Joomla\ApiDocumentation\Service\ConsoleProvider;
+use Joomla\ApiDocumentation\Service\DatabaseProvider;
 use Joomla\ApiDocumentation\Service\EventProvider;
+use Joomla\ApiDocumentation\Service\FilesystemProvider;
 use Joomla\ApiDocumentation\Service\HttpProvider;
 use Joomla\ApiDocumentation\Service\LoggingProvider;
 use Joomla\ApiDocumentation\Service\MigrationProvider;
@@ -98,38 +94,27 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 			->registerServiceProvider(new TwigProvider)
 			->registerServiceProvider(new WebApplicationProvider);
 
+		/** @var ServiceProvider[] $laravelProviders */
+		$laravelProviders = [
+			new DatabaseProvider($laravelContainer),
+			new MigrationProvider($laravelContainer),
+			new FilesystemProvider($laravelContainer),
+		];
+
 		// Configure Laravel container service providers
-		(new DatabaseServiceProvider($laravelContainer))->register();
-		(new MigrationProvider($laravelContainer))->register();
+		foreach ($laravelProviders as $provider)
+		{
+			$provider->register();
+		}
 
-		// We're using an extended migration creator, change the service in the Laravel container
-		$laravelContainer->extend(
-			'migration.creator',
-			function (IlluminateMigrationCreator $original, IlluminateContainer $app)
+		// Boot Laravel providers if able
+		foreach ($laravelProviders as $provider)
+		{
+			if (method_exists($provider, 'boot'))
 			{
-				return new MigrationCreator($app->make('files'));
+				$laravelContainer->call([$provider, 'boot']);
 			}
-		);
-
-		// We're only using the Filesystem class from Laravel, the provider also configures its filesystem manager and disks so manually do this
-		$laravelContainer->singleton(
-			'files',
-			function ()
-			{
-				return new Filesystem;
-			}
-		);
-		$laravelContainer->alias('files', Filesystem::class);
-
-		// Set up the database's capsule
-		$manager = new Manager($laravelContainer);
-		$manager->setAsGlobal();
-
-		// We don't have Laravel's event system wired in, so do what the DatabaseServiceProvider's boot method does without it
-		Model::setConnectionResolver($laravelContainer->make('db'));
-
-		// Set the default key length to account for utf8mb4 and MySQL 5.7 quirks
-		Builder::defaultStringLength(191);
+		}
 
 		return $joomlaContainer;
 	}

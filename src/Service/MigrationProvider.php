@@ -10,6 +10,7 @@ namespace Joomla\ApiDocumentation\Service;
 
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\MigrationServiceProvider;
+use Joomla\ApiDocumentation\Database\Migrations\MigrationCreator;
 
 /**
  * Extended migration service provider
@@ -36,6 +37,22 @@ final class MigrationProvider extends MigrationServiceProvider
 
 				// We are not using Laravel's event system, create the migrator without the event dispatcher
 				return new Migrator($repository, $app['db'], $app['files']);
+			}
+		);
+	}
+
+	/**
+	 * Register the migration creator.
+	 *
+	 * @return void
+	 */
+	protected function registerCreator()
+	{
+		$this->app->singleton(
+			'migration.creator',
+			function ($app)
+			{
+				return new MigrationCreator($app['files']);
 			}
 		);
 	}
