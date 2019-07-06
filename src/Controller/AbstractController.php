@@ -62,30 +62,4 @@ abstract class AbstractController implements ControllerInterface
 	{
 		return $this->input;
 	}
-
-	/**
-	 * Serialize the controller.
-	 *
-	 * @return  void
-	 *
-	 * @throws  \RuntimeException
-	 */
-	public function serialize()
-	{
-		throw new \RuntimeException(\sprintf('%s instances cannot be serialized.', static::class));
-	}
-
-	/**
-	 * Unserialize the controller.
-	 *
-	 * @param   string  $input  The serialized controller.
-	 *
-	 * @return  void
-	 *
-	 * @throws  \RuntimeException
-	 */
-	public function unserialize($input)
-	{
-		throw new \RuntimeException(\sprintf('%s instances cannot be unserialized.', static::class));
-	}
 }
