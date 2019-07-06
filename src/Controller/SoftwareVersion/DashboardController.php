@@ -91,6 +91,7 @@ final class DashboardController extends AbstractController
 						'deprecation_count' => $version->countDeprecations(),
 						'function_count'    => $version->functions()->count(),
 						'interface_count'   => $version->interfaces()->count(),
+						'namespaces'        => $version->getRootNamespaces(),
 						'version'           => $version,
 					]
 				)

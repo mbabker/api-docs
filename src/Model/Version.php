@@ -8,7 +8,6 @@
 
 namespace Joomla\ApiDocumentation\Model;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -178,5 +177,55 @@ final class Version extends Model
 			+ $deprecatedFunctions
 			+ $deprecatedInterfaces
 			+ $deprecatedInterfaceMethods;
+	}
+
+	/**
+	 * Get the root namespaces for the software version.
+	 *
+	 * If the version has classes in the global namespace, a two item array will be returned containing the name "global" and the root namespace
+	 * for all namespaced classes. If the version does not have classes in the global namespace, a one item array will be returned containing the
+	 * root namespace for all classes.
+	 *
+	 * @return  string[]
+	 */
+	public function getRootNamespaces(): array
+	{
+		/*
+SELECT MIN(u.Name) as Name, LENGTH(u.Name) as len
+FROM users u JOIN
+     (SELECT MIN(LENGTH(Name)) as minl, MAX(LENGTH(Name)) as maxl
+      FROM users u
+     ) uu
+     ON LENGTH(u.name) IN (uu.minl, uu.maxl)
+GROUP BY LENGTH(u.Name);
+		 */
+
+		$namespaces = [];
+
+		$globalNamespaceClasses = $this->classes()
+			->whereNull('namespace')
+			->count();
+
+		if ($globalNamespaceClasses > 0)
+		{
+			$namespaces[] = 'global';
+		}
+
+		$versionRootNamespaces = $this->getConnection()->select(<<<SQL
+SELECT MIN(c.namespace) AS namespace
+FROM classes c
+JOIN
+  (SELECT MIN(LENGTH(namespace)) as min_length FROM classes) cc
+  ON LENGTH(c.namespace) IN (cc.min_length)
+GROUP BY LENGTH(c.namespace)
+SQL
+		);
+
+		if (count($versionRootNamespaces) > 0)
+		{
+			$namespaces[] = $versionRootNamespaces[0]->namespace;
+		}
+
+		return $namespaces;
 	}
 }

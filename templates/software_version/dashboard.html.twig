@@ -7,6 +7,16 @@
     <p class="lead">This section provides the API reference for the Joomla! {{ version.display_name }} {{ version.version }} branch.</p>
     <div class="row-fluid">
         <main class="span9">
+            <ul class="nav nav-list">
+                <li class="nav-header">View Class Listing</li>
+                {% for namespace in namespaces %}
+                    {% if namespace == 'global' %}
+                        <li><a href="{{ route(version.software ~ '/' ~ version.version ~ '/classes') }}">Global Namespace</a></li>
+                    {% else %}
+                        <li><a href="{{ route(version.software ~ '/' ~ version.version ~ '/namespace/' ~ namespace|routed_namespace) }}">{{ namespace }} Namespace</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </main>
         <aside class="span3">
             <div class="well">
