@@ -213,8 +213,12 @@ final class ConsoleProvider implements ServiceProviderInterface
 	 */
 	public function getParseFilesCommandClassService(Container $container): ParseFilesCommand
 	{
-		return new ParseFilesCommand(
+		$command = new ParseFilesCommand(
 			$container->get(FilesystemParser::class)
 		);
+
+		$command->setLogger($container->get(LoggerInterface::class));
+
+		return $command;
 	}
 }

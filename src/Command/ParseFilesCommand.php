@@ -12,6 +12,8 @@ use Joomla\ApiDocumentation\Model\Version;
 use Joomla\ApiDocumentation\Parser\FilesystemParser;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Registry\Registry;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,8 +25,10 @@ use Symfony\Component\Process\Process;
 /**
  * Command to parse all files for a release
  */
-final class ParseFilesCommand extends AbstractCommand
+final class ParseFilesCommand extends AbstractCommand implements LoggerAwareInterface
 {
+	use LoggerAwareTrait;
+
 	/**
 	 * Internal tracker of stable releases for select software
 	 *
@@ -138,7 +142,10 @@ final class ParseFilesCommand extends AbstractCommand
 		}
 		catch (ProcessFailedException $e)
 		{
-			$this->getApplication()->getLogger()->error('Could not checkout requested version', ['exception' => $e]);
+			if ($this->logger)
+			{
+				$this->logger->error('Could not checkout requested version', ['exception' => $e]);
+			}
 
 			$symfonyStyle->error('Error checking out version: ' . $e->getMessage());
 
