@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>
+            Joomla! {{ version.display_name }} API Documentation
+            <small>
+                {%- if current_namespace is null -%}
+                    Global Namespace
+                {%- else -%}
+                    {{ current_namespace }}
+                {%- endif -%}
+            </small>
+        </h1>
+    </div>
+
+    {% if functions|length %}
+        <div class="page-header">
+            <h2>Function List</h2>
+        </div>
+
+        {% for function in functions %}
+            <div>
+                <h3>{{ function.shortname }}</h3>
+                {% if function.summary %}
+                    <p>{{ function.summary }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if classes|length %}
+        <div class="page-header">
+            <h2>Class List</h2>
+        </div>
+
+        {% for class in classes %}
+            <div>
+                <h3>{{ class.shortname }}</h3>
+                {% if class.summary %}
+                    <p>{{ class.summary }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

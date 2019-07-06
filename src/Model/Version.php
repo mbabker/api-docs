@@ -180,6 +180,30 @@ final class Version extends Model
 	}
 
 	/**
+	 * Get the classes in the global namespace for this software version.
+	 *
+	 * @return  Collection|PHPClass[]
+	 */
+	public function getGlobalNamespaceClasses(): Collection
+	{
+		return $this->classes()
+			->whereNull('namespace')
+			->get();
+	}
+
+	/**
+	 * Get the functions in the global namespace for this software version.
+	 *
+	 * @return  Collection|PHPFunction[]
+	 */
+	public function getGlobalNamespaceFunctions(): Collection
+	{
+		return $this->functions()
+			->whereNull('namespace')
+			->get();
+	}
+
+	/**
 	 * Get the root namespaces for the software version.
 	 *
 	 * If the version has classes in the global namespace, a two item array will be returned containing the name "global" and the root namespace
@@ -206,7 +230,11 @@ GROUP BY LENGTH(u.Name);
 			->whereNull('namespace')
 			->count();
 
-		if ($globalNamespaceClasses > 0)
+		$globalNamespaceFunctions = $this->functions()
+			->whereNull('namespace')
+			->count();
+
+		if ($globalNamespaceClasses > 0 || $globalNamespaceFunctions > 0)
 		{
 			$namespaces[] = 'global';
 		}

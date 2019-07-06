@@ -9,6 +9,7 @@
 namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Controller\HomepageController;
+use Joomla\ApiDocumentation\Controller\SoftwareVersion\ClassListing\GlobalNamespaceClassListController;
 use Joomla\ApiDocumentation\Controller\SoftwareVersion\DashboardController;
 use Joomla\ApiDocumentation\Controller\SoftwareVersion\RedirectToLatestVersionDashboardController;
 use Joomla\ApiDocumentation\Controller\WrongCmsController;
@@ -64,6 +65,7 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		// Controllers
 		$container->share(HomepageController::class, [$this, 'getHomepageControllerService']);
 		$container->share(DashboardController::class, [$this, 'getSoftwareVersionDashboardControllerService']);
+		$container->share(GlobalNamespaceClassListController::class, [$this, 'getGlobalNamespaceClassListControllerService']);
 		$container->share(RedirectToLatestVersionDashboardController::class, [$this, 'getRedirectToLatestVersionDashboardControllerService']);
 		$container->share(WrongCmsController::class, [$this, 'getWrongCmsControllerService']);
 	}
@@ -78,6 +80,23 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	public function getControllerResolverService(Container $container): ControllerResolverInterface
 	{
 		return new ContainerControllerResolver($container);
+	}
+
+	/**
+	 * Get the GlobalNamespaceClassListController class service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  GlobalNamespaceClassListController
+	 */
+	public function getGlobalNamespaceClassListControllerService(Container $container): GlobalNamespaceClassListController
+	{
+		return new GlobalNamespaceClassListController(
+			$container->get(RendererInterface::class),
+			$container->get(VersionRepository::class),
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 
 	/**
@@ -178,6 +197,14 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		$router->get(
 			'/:software/:version',
 			DashboardController::class,
+			[
+				'software' => implode('|', Version::getSupportedSoftware()),
+			]
+		);
+
+		$router->get(
+			'/:software/:version/classes',
+			GlobalNamespaceClassListController::class,
 			[
 				'software' => implode('|', Version::getSupportedSoftware()),
 			]
