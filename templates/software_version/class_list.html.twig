@@ -1,5 +1,13 @@
 {% extends 'base.html.twig' %}
 
+{%- block title -%}
+    {%- if current_namespace is null -%}
+        Global Namespace
+    {%- else -%}
+        {{ current_namespace }} Namespace
+    {%- endif %} | Joomla! {{ version.display_name }} {{ version.version }} | {{ parent() }}
+{%- endblock -%}
+
 {% block content %}
     <div class="page-header">
         <h1>

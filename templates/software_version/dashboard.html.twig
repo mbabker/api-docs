@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Joomla! {{ version.display_name }} {{ version.version }} Dashboard | {{ parent() }}{% endblock %}
+
 {% block content %}
     <div class="page-header">
         <h1>Joomla! {{ version.display_name }} API Documentation</h1>
