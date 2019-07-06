@@ -180,6 +180,48 @@ final class Version extends Model
 	}
 
 	/**
+	 * Get the direct child namespaces of the specified namespace for this software version.
+	 *
+	 * @param   string  $namespace  The namespace to fetch children of.
+	 *
+	 * @return  string[]
+	 */
+	public function getDirectChildNamespaces(string $namespace): array
+	{
+		// Add one to the separator count for the query
+		$nsSeparatorCount = substr_count($namespace, '\\') + 1;
+
+		$escapedNamespace = $this->getConnection()->getPdo()->quote(str_replace('\\', '\\\\', $namespace) . '\\\%');
+
+		$namespaces = $this->getConnection()->select(<<<SQL
+SELECT 
+  namespace,
+  ROUND(
+    (
+      LENGTH(namespace) - LENGTH(REPLACE(namespace, "\\\\", ""))
+    ) / LENGTH("\\\\")
+  ) AS ns_count
+FROM classes
+WHERE namespace IS NOT NULL
+AND namespace LIKE $escapedNamespace
+GROUP BY namespace
+HAVING ns_count = $nsSeparatorCount
+ORDER BY namespace ASC;
+
+SQL
+		);
+
+		$childNamespaces = [];
+
+		foreach ($namespaces as $namespaceRecord)
+		{
+			$childNamespaces[] = $namespaceRecord->namespace;
+		}
+
+		return $childNamespaces;
+	}
+
+	/**
 	 * Get the classes in the global namespace for this software version.
 	 *
 	 * @return  Collection|PHPClass[]
@@ -200,6 +242,34 @@ final class Version extends Model
 	{
 		return $this->functions()
 			->whereNull('namespace')
+			->get();
+	}
+
+	/**
+	 * Get the classes in the specified namespace for this software version.
+	 *
+	 * @param   string  $namespace  The namespace to fetch classes for.
+	 *
+	 * @return  Collection|PHPClass[]
+	 */
+	public function getNamespaceClasses(string $namespace): Collection
+	{
+		return $this->classes()
+			->where('namespace', '=', $namespace)
+			->get();
+	}
+
+	/**
+	 * Get the functions in the specified namespace for this software version.
+	 *
+	 * @param   string  $namespace  The namespace to fetch functions for.
+	 *
+	 * @return  Collection|PHPFunction[]
+	 */
+	public function getNamespaceFunctions(string $namespace): Collection
+	{
+		return $this->functions()
+			->where('namespace', '=', $namespace)
 			->get();
 	}
 

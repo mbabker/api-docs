@@ -43,4 +43,16 @@
             </div>
         {% endfor %}
     {% endif %}
+
+    {% if child_namespaces|length %}
+        <div class="page-header">
+            <h2>Child Namespaces</h2>
+        </div>
+
+        <ul class="nav nav-list">
+            {% for namespace in child_namespaces %}
+                <li><a href="{{ route(version.software ~ '/' ~ version.version ~ '/namespace/' ~ namespace|routed_namespace) }}">{{ namespace }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}

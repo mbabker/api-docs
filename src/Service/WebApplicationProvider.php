@@ -10,6 +10,7 @@ namespace Joomla\ApiDocumentation\Service;
 
 use Joomla\ApiDocumentation\Controller\HomepageController;
 use Joomla\ApiDocumentation\Controller\SoftwareVersion\ClassListing\GlobalNamespaceClassListController;
+use Joomla\ApiDocumentation\Controller\SoftwareVersion\ClassListing\NamespaceClassListController;
 use Joomla\ApiDocumentation\Controller\SoftwareVersion\DashboardController;
 use Joomla\ApiDocumentation\Controller\SoftwareVersion\RedirectToLatestVersionDashboardController;
 use Joomla\ApiDocumentation\Controller\WrongCmsController;
@@ -66,6 +67,7 @@ final class WebApplicationProvider implements ServiceProviderInterface
 		$container->share(HomepageController::class, [$this, 'getHomepageControllerService']);
 		$container->share(DashboardController::class, [$this, 'getSoftwareVersionDashboardControllerService']);
 		$container->share(GlobalNamespaceClassListController::class, [$this, 'getGlobalNamespaceClassListControllerService']);
+		$container->share(NamespaceClassListController::class, [$this, 'getNamespaceClassListControllerService']);
 		$container->share(RedirectToLatestVersionDashboardController::class, [$this, 'getRedirectToLatestVersionDashboardControllerService']);
 		$container->share(WrongCmsController::class, [$this, 'getWrongCmsControllerService']);
 	}
@@ -125,6 +127,23 @@ final class WebApplicationProvider implements ServiceProviderInterface
 	public function getInputService(Container $container): Input
 	{
 		return new Input($_REQUEST);
+	}
+
+	/**
+	 * Get the NamespaceClassListController class service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  NamespaceClassListController
+	 */
+	public function getNamespaceClassListControllerService(Container $container): NamespaceClassListController
+	{
+		return new NamespaceClassListController(
+			$container->get(RendererInterface::class),
+			$container->get(VersionRepository::class),
+			$container->get(WebApplication::class),
+			$container->get(Input::class)
+		);
 	}
 
 	/**
@@ -207,6 +226,15 @@ final class WebApplicationProvider implements ServiceProviderInterface
 			GlobalNamespaceClassListController::class,
 			[
 				'software' => implode('|', Version::getSupportedSoftware()),
+			]
+		);
+
+		$router->get(
+			'/:software/:version/namespace/:namespace',
+			NamespaceClassListController::class,
+			[
+				'software'  => implode('|', Version::getSupportedSoftware()),
+				'namespace' => '.*',
 			]
 		);
 

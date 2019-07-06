@@ -21,9 +21,9 @@ use Joomla\Router\Exception\RouteNotFoundException;
 use Zend\Diactoros\Response\HtmlResponse;
 
 /**
- * Controller class to display the list of global classes in a software version.
+ * Controller class to display the list of classes in a namespace in a software version.
  */
-final class GlobalNamespaceClassListController extends AbstractController
+final class NamespaceClassListController extends AbstractController
 {
 	/**
 	 * The view renderer.
@@ -85,21 +85,37 @@ final class GlobalNamespaceClassListController extends AbstractController
 			);
 		}
 
+		$namespace = str_replace('/', '\\', $this->getInput()->getPath('namespace'));
+
 		// Alpha sort for display
 		/** @var Collection|PHPClass[] $classes */
-		$classes = $version->getGlobalNamespaceClasses()->sortBy('shortname');
+		$classes = $version->getNamespaceClasses($namespace)->sortBy('shortname');
 
 		/** @var Collection|PHPFunction[] $classes */
-		$functions = $version->getGlobalNamespaceFunctions()->sortBy('shortname');
+		$functions = $version->getNamespaceFunctions($namespace)->sortBy('shortname');
+
+		$childNamespaces = $version->getDirectChildNamespaces($namespace);
+
+		if ($classes->isEmpty() && $functions->isEmpty() && count($childNamespaces) === 0)
+		{
+			throw new RouteNotFoundException(
+				sprintf(
+					'Namespace "%s" does not exist in the "%s" software at version "%s".',
+					$namespace,
+					$this->getInput()->getString('software'),
+					$this->getInput()->getString('version')
+				)
+			);
+		}
 
 		$this->getApplication()->setResponse(
 			new HtmlResponse(
 				$this->renderer->render(
 					'software_version/class_list.html.twig',
 					[
-						'child_namespaces'  => [],
+						'child_namespaces'  => $childNamespaces,
 						'classes'           => $classes,
-						'current_namespace' => null,
+						'current_namespace' => $namespace,
 						'functions'         => $functions,
 						'version'           => $version,
 					]
