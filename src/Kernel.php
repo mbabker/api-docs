@@ -13,7 +13,6 @@ use Illuminate\Container\Container as IlluminateContainer;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\MigrationServiceProvider;
 use Illuminate\Database\Migrations\MigrationCreator as IlluminateMigrationCreator;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Filesystem\Filesystem;
@@ -24,6 +23,7 @@ use Joomla\ApiDocumentation\Service\ConsoleProvider;
 use Joomla\ApiDocumentation\Service\EventProvider;
 use Joomla\ApiDocumentation\Service\HttpProvider;
 use Joomla\ApiDocumentation\Service\LoggingProvider;
+use Joomla\ApiDocumentation\Service\MigrationProvider;
 use Joomla\ApiDocumentation\Service\ParserProvider;
 use Joomla\ApiDocumentation\Service\RepositoryProvider;
 use Joomla\ApiDocumentation\Service\TwigProvider;
@@ -100,7 +100,7 @@ abstract class Kernel implements KernelInterface, ContainerAwareInterface
 
 		// Configure Laravel container service providers
 		(new DatabaseServiceProvider($laravelContainer))->register();
-		(new MigrationServiceProvider($laravelContainer))->register();
+		(new MigrationProvider($laravelContainer))->register();
 
 		// We're using an extended migration creator, change the service in the Laravel container
 		$laravelContainer->extend(
