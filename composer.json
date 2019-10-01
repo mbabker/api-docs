@@ -7,9 +7,9 @@
         "php": "^7.2",
         "ext-json": "*",
         "ext-pdo": "*",
-        "illuminate/console": "5.8.*",
-        "illuminate/database": "5.8.*",
-        "illuminate/filesystem": "5.8.*",
+        "illuminate/console": "^6.1",
+        "illuminate/database": "^6.1",
+        "illuminate/filesystem": "^6.1",
         "joomla/application": "~2.0@dev",
         "joomla/console": "~2.0@dev",
         "joomla/controller": "~2.0@dev",
@@ -22,7 +22,7 @@
         "joomla/renderer": "~2.0@dev",
         "joomla/router": "~2.0@dev",
         "joomla/uri": "~2.0@dev",
-        "monolog/monolog": "^1.24",
+        "monolog/monolog": "^2.0",
         "nikic/php-parser": "^1.4.1",
         "phpdocumentor/reflection": "^3.0.1",
         "symfony/cache": "4.3.*",
@@ -30,8 +30,8 @@
         "symfony/finder": "4.3.*",
         "symfony/process": "4.3.*",
         "symfony/yaml": "4.3.*",
-        "twig/twig": "^2.11.1",
-        "zendframework/zend-diactoros": "^2.1.2"
+        "twig/twig": "^2.11.3",
+        "zendframework/zend-diactoros": "^2.1.3"
     },
     "require-dev": {
         "joomla/coding-standards": "dev-master",
@@ -50,7 +50,7 @@
     "config": {
         "optimize-autoloader": true,
         "platform": {
-            "php": "7.2.18"
+            "php": "7.2.22"
         },
         "preferred-install": "dist",
         "sort-packages": true
