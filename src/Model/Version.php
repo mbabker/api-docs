@@ -194,6 +194,8 @@ final class Version extends Model
 
 		$escapedNamespace = $this->getConnection()->getPdo()->quote(str_replace('\\', '\\\\', $namespace) . '\\\%');
 
+		$classesTableName = $this->getConnection()->getTablePrefix() . (new PHPClass)->getTable();
+
 		$namespaces = $this->getConnection()->select(<<<SQL
 SELECT 
   namespace,
@@ -202,7 +204,7 @@ SELECT
       LENGTH(namespace) - LENGTH(REPLACE(namespace, "\\\\", ""))
     ) / LENGTH("\\\\")
   ) AS ns_count
-FROM classes
+FROM $classesTableName
 WHERE namespace IS NOT NULL
 AND namespace LIKE $escapedNamespace
 GROUP BY namespace
@@ -285,16 +287,6 @@ SQL
 	 */
 	public function getRootNamespaces(): array
 	{
-		/*
-SELECT MIN(u.Name) as Name, LENGTH(u.Name) as len
-FROM users u JOIN
-     (SELECT MIN(LENGTH(Name)) as minl, MAX(LENGTH(Name)) as maxl
-      FROM users u
-     ) uu
-     ON LENGTH(u.name) IN (uu.minl, uu.maxl)
-GROUP BY LENGTH(u.Name);
-		 */
-
 		$namespaces = [];
 
 		$globalNamespaceClasses = $this->classes()
@@ -310,11 +302,13 @@ GROUP BY LENGTH(u.Name);
 			$namespaces[] = 'global';
 		}
 
+		$classesTableName = $this->getConnection()->getTablePrefix() . (new PHPClass)->getTable();
+
 		$versionRootNamespaces = $this->getConnection()->select(<<<SQL
 SELECT MIN(c.namespace) AS namespace
-FROM classes c
+FROM $classesTableName c
 JOIN
-  (SELECT MIN(LENGTH(namespace)) as min_length FROM classes) cc
+  (SELECT MIN(LENGTH(namespace)) as min_length FROM $classesTableName) cc
   ON LENGTH(c.namespace) IN (cc.min_length)
 GROUP BY LENGTH(c.namespace)
 SQL
