@@ -55,6 +55,7 @@ final class Version extends Model
 	protected $fillable = [
 		'software',
 		'version',
+		'display_name',
 	];
 
 	/**
